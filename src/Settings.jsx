@@ -13,6 +13,7 @@ import {
   CardText
 } from 'material-ui/Card';
 import { List, ListItem } from 'material-ui/List';
+import Subheader from 'material-ui/Subheader';
 import Divider from 'material-ui/Divider';
 import Toggle from 'material-ui/Toggle';
 import TextField from 'material-ui/TextField';
@@ -25,8 +26,7 @@ const messages = defineMessages({
   customizeShortcuts: {
     id: 'settings.general.customizeShortcuts',
     description: 'Title shown in General Settings Card',
-    defaultMessage:
-      'You can customize these shortcuts on {configureUrl} page.'
+    defaultMessage: 'You can customize these shortcuts on {configureUrl} page.'
   },
   shortcuts: {
     id: 'settings.shortcuts',
@@ -184,6 +184,7 @@ class Settings extends Component {
         <Card expanded={expanded}>
           <CardText>
             <List>
+              <Subheader>Windows/Linux</Subheader>
               <ListItem
                 disabled
                 primaryText={formatMessage(messages.inserPassword)}
@@ -200,6 +201,27 @@ class Settings extends Component {
                 )}
                 secondaryTextLines={2}
                 rightIcon={makeShortcut(['Ctrl', 'Shift', 'U'])}
+              />
+            </List>
+            <Divider />
+            <List>
+              <Subheader>Mac</Subheader>
+              <ListItem
+                disabled
+                primaryText={formatMessage(messages.inserPassword)}
+                secondaryText={formatMessage(messages.inserPasswordDesc)}
+                secondaryTextLines={2}
+                rightIcon={makeShortcut(['⌘', 'Shift', 'P'])}
+              />
+              <Divider />
+              <ListItem
+                disabled
+                primaryText={formatMessage(messages.inserUserNamePassword)}
+                secondaryText={formatMessage(
+                  messages.inserUserNamePasswordDesc
+                )}
+                secondaryTextLines={2}
+                rightIcon={makeShortcut(['⌘', 'Shift', 'U'])}
               />
             </List>
           </CardText>

@@ -42,6 +42,6 @@
   "settings.shortcuts": "Skratky",
   "settings.shortcuts.inserPassword": "Vložiť heslo",
   "settings.shortcuts.inserPasswordDesc": "Vloží sa heslo na miesto s fokusom",
-  "settings.shortcuts.inserUserNamePassword":"Vložiť meno a heslo",
+  "settings.shortcuts.inserUserNamePassword": "Vložiť meno a heslo",
   "settings.shortcuts.inserUserNamePasswordDesc": "Na miesto s fokusom sa vloží meno a heslo."
 }

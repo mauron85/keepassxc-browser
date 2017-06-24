@@ -54,7 +54,7 @@ const muiTheme = getMuiTheme({
 
 const rootEl = document.getElementById('root');
 const render = (Component, locale, messages) => {
-  console.log('[DEBUG] rendering App', locale, messages);
+  console.log('[DEBUG] rendering App');
   ReactDOM.render(
     <AppContainer>
       <IntlProvider locale={locale} messages={messages}>

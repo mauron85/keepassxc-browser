@@ -4,12 +4,15 @@
   "description": "Chrome extension for KeePassXC with Native Messaging",
   "scripts": {
     "clean:dist": "rimraf dist",
+    "clean:preview": "rimraf preview",
     "copy:dist": "copyfiles -u 1 src/* src/icons/** src/popups/** src/background/** src/vendor/** dist/",
+    "copy:preview": "copyfiles -u 1 src/* src/icons/** src/popups/** src/background/** src/vendor/** preview/",
     "manage:locales": "BABEL_ENV=i18n babel src > /dev/null",
     "manage:translations": "node ./translationRunner.js",
     "intl": "npm run manage:locales && npm run manage:translations",
     "start": "npm run intl && webpack-dev-server",
     "build": "npm run clean:dist && npm run copy:dist && webpack --progress --config webpack.config.prod.js",
+    "build:preview": "npm run clean:preview && npm run copy:preview && webpack --progress --config webpack.config.preview.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

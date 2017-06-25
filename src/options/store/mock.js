@@ -1,5 +1,3 @@
-/* globals localStorage */
-
 let keyRing = {
   abcdf: {
     id: 'keepassxc',
@@ -15,16 +13,31 @@ let keyRing = {
   }
 };
 
-export function getSettings() {
-  const settings = localStorage.getItem('settings');
-  if (settings) {
-    return JSON.parse(settings);
+let settings = {
+  checkUpdateKeePassXC: 3,
+  autoCompleteUsernames: true,
+  autoFillAndSend: true,
+  usePasswordGenerator: true,
+  autoFillSingleEntry: false,
+  autoRetrieveCredentials: true,
+  blinkTimeout: 2132,
+  blinkMinTimeout: 1000,
+  allowedRedirect: 1,
+  'defined-credential-fields': {
+    'https://news.ycombinator.com': {
+      username: 'jQuery342845639',
+      password: 'jQuery342845640',
+      fields: []
+    }
   }
-  return null;
+};
+
+export function getSettings() {
+  return settings;
 }
 
-export function setSettings(settings) {
-  localStorage.setItem('settings', JSON.stringify(settings));
+export function setSettings(_settings) {
+  settings = _settings;
 }
 
 export function getKeyRing() {

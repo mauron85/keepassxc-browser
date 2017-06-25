@@ -1,3 +1,4 @@
+import pick from 'lodash/pick';
 import React, { Component } from 'react';
 import { intlShape, defineMessages, injectIntl } from 'react-intl';
 import AppBar from 'material-ui/AppBar';
@@ -77,7 +78,8 @@ const defaultSettings = {
   autoFillSingleEntry: false,
   autoCompleteUsernames: true,
   checkUpdateKeePassXC: 3,
-  autoFillAndSend: true
+  autoFillAndSend: true,
+  'defined-credential-fields': {}
 };
 
 class App extends Component {
@@ -96,11 +98,15 @@ class App extends Component {
       showSnack: false,
       slideIndex: 0
     };
-    this.settings = store.getSettings();
+    const settings = Object.assign({}, defaultSettings, store.getSettings());
     const keyRing = store.getKeyRing();
     const databases =
       keyRing && Object.keys(keyRing).map(hash => ({ hash, ...keyRing[hash] }));
+    this.settings = settings;
     this.databases = databases || [];
+    this.credentials = Object.keys(
+      settings['defined-credential-fields']
+    ).map((pageUrl, index) => ({ id: index, pageUrl }));
   }
 
   componentWillMount() {
@@ -129,13 +135,27 @@ class App extends Component {
     associate();
   };
 
-  handleDatabaseDelete = (keepDatabases) => {
+  handleDatabaseDelete = keepDatabases => {
     this.databases = keepDatabases;
     const keyRing = keepDatabases.reduce((memo, db) => {
       memo[db.hash] = db;
       return memo;
     }, {});
     store.setKeyRing(keyRing);
+    this.forceUpdate();
+  };
+
+  handleCredentialsDelete = keepCredentials => {
+    this.credentials = keepCredentials;
+    const currentCredentials = this.settings['defined-credential-fields'];
+    const pageUrls = keepCredentials.map(cred => cred.pageUrl);
+    const newCredentials = pick(currentCredentials, pageUrls);
+    const newSettings = {
+      ...this.settings,
+      'defined-credential-fields': newCredentials
+    };
+    store.setSettings(newSettings);
+    loadSettings();
     this.forceUpdate();
   }
 
@@ -144,6 +164,7 @@ class App extends Component {
     const { formatMessage } = this.props.intl;
     const settings = this.settings;
     const databases = this.databases;
+    const credentials = this.credentials;
 
     return (
       <div>
@@ -193,7 +214,9 @@ class App extends Component {
               onConnect={this.handleConnect}
             />
           </div>
-          <div style={styles.page}><Credentials /></div>
+          <div style={styles.page}>
+            <Credentials credentials={credentials} onDelete={this.handleCredentialsDelete} />
+          </div>
           <div style={styles.page}>
             <About pluginVersion={pluginVersion} appVersions={appVersions} />
           </div>

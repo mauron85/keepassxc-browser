@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   FormattedMessage,
   FormattedDate,
@@ -27,18 +28,6 @@ import { cyan50, cyan500, transparent } from 'material-ui/styles/colors';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import BinIcon from './icons/Bin';
-
-let credentialsFixture = [
-  {
-    id: 1,
-    pageUrl: 'https://mail.google.com',
-  },
-  {
-    id: 2,
-    pageUrl: 'https://outlook.com'
-  }
-];
-// databases = [];
 
 const styles = {
   smallIcon: {
@@ -121,15 +110,16 @@ On this page you can manage theses specified credential fields.`
 
 class Credentials extends Component {
   static propTypes = {
-    intl: intlShape.isRequired
+    intl: intlShape.isRequired,
+    credentials: PropTypes.array.isRequired,
+    onDelete: PropTypes.func.isRequired
   };
 
   constructor(props) {
     super(props);
     this.state = {
       selectedRows: [],
-      showConfirmDialog: false,
-      credentials: credentialsFixture
+      showConfirmDialog: false
     };
     this.handleRowSelection = this.handleRowSelection.bind(this);
     this.handleShowRemoveDialog = this.handleShowRemoveDialog.bind(this);
@@ -150,7 +140,8 @@ class Credentials extends Component {
   }
 
   handleRemove() {
-    const { credentials, selectedRows } = this.state;
+    const { selectedRows } = this.state;
+    const { credentials } = this.props;
     let keepCredentials = credentials;
     if (selectedRows === 'all') {
       keepCredentials = [];
@@ -161,17 +152,15 @@ class Credentials extends Component {
     } else {
       return false;
     }
-    this.setState({
-      credentials: keepCredentials,
-      selectedRows: [],
-      showConfirmDialog: false
-    });
+    this.setState({ selectedRows: [], showConfirmDialog: false });
+    this.props.onDelete(keepCredentials);
     return true;
   }
 
   render() {
-    const { selectedRows, showConfirmDialog, credentials } = this.state;
+    const { selectedRows, showConfirmDialog } = this.state;
     const { formatMessage } = this.props.intl;
+    const { credentials } = this.props;
 
     const actions = [
       <FlatButton

@@ -1,0 +1,212 @@
+.cip-ui-autocomplete li.cip-ui-menu-item {
+	text-align: left !important;
+	font-size: 12px !important;
+	font-weight: normal !important;
+	font-style: normal !important;
+	font-family: Verdana, Arial, sans-serif !important;
+	color: #222222 !important;
+}
+
+.ui-dialog-titlebar-close {
+	visibility: hidden !important;
+}
+
+.ui-dialog {
+	font-size: 12px !important;
+}
+
+.dialog-form .ui-dialog-content .ui-widget-content {
+	max-height: 80px !important;
+}
+
+.ui-dialog-titlebar {
+	background-color: #3a8233;
+	color: #fff;
+}
+
+.ui-dialog .ui-dialog-buttonpane { 
+    text-align: center !important;
+}
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset { 
+    float: none !important;
+}
+
+.ui-button .ui-button-text .ui-button {
+	font-size: .10em !important; 
+}
+
+input.genpw-text {
+	font-size: .9em !important;
+	padding: .4em;
+	border-radius: 4px;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	border-collapse: separate;
+	width: 100%;
+}
+.genpw-input-group-addon {
+	font-size: inherit !important;
+	background-color: #eee;
+	border: 1px solid #ccc;
+	padding: .4em;
+	border-radius: 4px;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	white-space: nowrap;
+	vertical-align: middle;
+	display: table-cell;
+	border-collapse: separate;
+}
+
+.genpw-input-group {
+	position: relative;
+	display: table;
+	border-collapse: separate;
+	width: 100%;
+}
+
+.cip-genpw-icon {
+	position: absolute;
+	cursor: pointer;
+}
+.cip-genpw-icon.cip-icon-key-small {
+	width: 16px;
+	height: 16px;
+	background-image: url(chrome-extension://__MSG_@@extension_id__/icons/key_16x16.png);
+}
+.cip-genpw-icon.cip-icon-key-big {
+	width: 24px;
+	height: 24px;
+	background-image: url(chrome-extension://__MSG_@@extension_id__/icons/key_24x24.png);
+}
+.cip-genpw-icon.cip-icon-key-small-moz {
+	width: 16px;
+	height: 16px;
+	background-image: url(moz-extension://__MSG_@@extension_id__/icons/key_16x16.png);
+}
+.cip-genpw-icon.cip-icon-key-big-moz {
+	width: 24px;
+	height: 24px;
+	background-image: url(moz-extension://__MSG_@@extension_id__/icons/key_24x24.png);
+}
+
+#cip-genpw-btn-fillin {
+	margin-right: 5px;
+}
+
+.b2c-modal-backdrop {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 2147483645;
+}
+.b2c-modal-backdrop:after {
+	content:'';
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background-color: #000000;
+	opacity: 0.8;
+	filter: alpha(opacity=80);
+}
+#b2c-cipDefine-fields {
+	z-index: 2147483646;
+}
+#b2c-cipDefine-description {
+	z-index: 2147483646;
+	color: #efefef;
+	border: 2px solid #555555;
+	padding: 7px 5px;
+	position: absolute;
+	top: 100px;
+	left: 150px;
+	text-align: left;
+	cursor: pointer;
+	background-color:rgba(255,255,255,0.3);
+	font-size: 15px;
+}
+#b2c-cipDefine-description div:first-of-type {
+	margin-top: 0;
+	padding-top: 0;
+	text-align: left;
+	color: #efefef;
+	padding-bottom: 8px;
+	font-weight: bold;
+	font-size: 160%;
+}
+#b2c-cipDefine-description p {
+	margin-top: 10px;
+	padding-top: 10px;
+	color: #efefef;
+	border-top: 2px solid #666666;
+	line-height: 110%;
+}
+#b2c-help {
+	margin-bottom: 3px;
+}
+.b2c-fixed-field {
+	position: absolute;
+	border: 2px solid #efefef;
+	cursor: pointer;
+	z-index: 2147483646;
+	text-align: left;
+	font-weight: bold;
+	background-color:rgba(239,239,239,0.4);
+}
+.b2c-fixed-hover-field {
+	border: 2px solid orange;
+	background-color:rgba(255,165,239,0.4);
+}
+.b2c-fixed-password-field {
+	border: 2px solid red;
+	color: #efefef;
+	background-color:rgba(255,0,0,0.4);
+}
+.b2c-fixed-username-field {
+	border: 2px solid limegreen;
+	color: #efefef;
+	background-color:rgba(50,205,50,0.4);
+}
+.b2c-fixed-string-field {
+	border: 2px solid deepskyblue;
+	color: #efefef;
+	background-color:rgba(30,144,255,0.4);
+}
+
+
+.b2c-input-append {
+  display: inline-block;
+  margin-bottom: 10px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.b2c-input-append input,
+.b2c-input-append select,
+.b2c-input-append .b2c-uneditable-input,
+.b2c-input-append .b2c-dropdown-menu,
+.b2c-input-append .b2c-popover {
+  font-size: 14px;
+}
+
+.b2c-input-append input,
+.b2c-input-append select,
+.b2c-input-append .b2c-uneditable-input {
+  position: relative;
+  margin-bottom: 0;
+  *margin-left: 0;
+  vertical-align: top;
+  -webkit-border-radius: 0 4px 4px 0;
+     -moz-border-radius: 0 4px 4px 0;
+          border-radius: 0 4px 4px 0;
+}
+
+.b2c-input-append input:focus,
+.b2c-input-append select:focus,
+.b2c-input-append .b2c-b2c-uneditable-input:focus {
+  z-index: 2;
+}

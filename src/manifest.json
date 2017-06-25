@@ -1,0 +1,81 @@
+{
+	"manifest_version": 2,
+	"name": "keepassxc-browser",
+	"version": "0.2.0",
+	"description": "KeePassXC integration for modern web browsers",
+	"author": "Sami Vänttinen",
+	"icons": {
+		"16": "icons/keepassxc_16x16.png",
+		"48": "icons/keepassxc_48x48.png",
+		"128": "icons/keepassxc_128x128.png"
+	},
+
+	"browser_action": {
+		"default_icon": {
+			"19": "icons/keepassxc_19x19.png",
+			"38": "icons/keepassxc_38x38.png"
+		},
+		"default_title": "keepassxc-browser",
+		"default_popup": "popups/popup.html"
+	},
+	"options_ui": {
+		"page": "index.html",
+		"open_in_tab": true
+	},
+	"background": {
+		"scripts": [
+			"background/nacl.min.js",
+			"background/nacl-util.min.js",
+			"background/keepass.js",
+			"background/httpauth.js",
+			"background/browserAction.js",
+			"background/page.js",
+			"background/event.js",
+			"background/init.js"
+		]
+	},
+	"content_scripts": [
+		{
+			"matches": [ "http://*/*", "https://*/*" ],
+			"js": [ "vendor/jquery-3.2.1.min.js", "vendor/jquery-ui.min.js", "keepassxc-browser.js" ],
+			"css": [ "vendor/jquery-ui.min.css", "keepassxc-browser.css" ],
+			"run_at": "document_idle",
+			"all_frames": true
+		}
+	],
+	"commands": {
+		"fill-username-password": {
+			"description": "Insert username + password",
+			"suggested_key": {
+				"default": "Ctrl+Shift+U",
+				"mac": "Command+Shift+U"
+			}
+		},
+		"fill-password": {
+			"description": "Insert a password",
+			"suggested_key": {
+				"default": "Ctrl+Shift+P",
+				"mac": "Command+Shift+P"
+			}
+		}
+	},
+	"web_accessible_resources": [
+		"icons/key_16x16.png",
+		"icons/key_24x24.png"
+	],
+	"permissions": [
+		"contextMenus",
+		"clipboardWrite",
+		"nativeMessaging",
+		"tabs",
+		"webRequest",
+		"webRequestBlocking",
+		"https://raw.github.com/"
+	],
+	"applications": {
+		"gecko": {
+			"id": "keepassxc-browser@sami.vanttinen",
+			"strict_min_version": "53.0"
+		}
+	}
+}

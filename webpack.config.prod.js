@@ -4,7 +4,7 @@ const webpack = require('webpack');
 module.exports = {
   entry: {
     main: [
-      './src/index.js',
+      './src/options/index.js',
     ]
   },
   output: {

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "settings.shortcuts.inserPassword",
+    "defaultMessage": "Insert password only"
+  },
+  {
+    "id": "settings.shortcuts.inserPasswordDesc",
+    "defaultMessage": "Insert only password into the field where your focus is"
+  },
+  {
+    "id": "settings.shortcuts.inserUserNamePassword",
+    "defaultMessage": "Insert username and password"
+  },
+  {
+    "id": "settings.shortcuts.inserUserNamePasswordDesc",
+    "defaultMessage": "Insert username and password into the fields where your focus is"
+  }
+]

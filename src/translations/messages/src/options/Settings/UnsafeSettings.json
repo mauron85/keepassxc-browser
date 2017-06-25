@@ -1,0 +1,10 @@
+[
+  {
+    "id": "settings.unsafe.autoFillInSingle",
+    "defaultMessage": "Automatically fill-in single credentials entry"
+  },
+  {
+    "id": "settings.unsafe.autoFillInSingleDesc",
+    "defaultMessage": "If keepassxc-browser does only receive a single entry from KeePassXC it automatically fills this credentials into the found credential fields"
+  }
+]

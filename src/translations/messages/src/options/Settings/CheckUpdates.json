@@ -1,0 +1,42 @@
+[
+  {
+    "id": "settings.updates.checkUpdates",
+    "defaultMessage": "Check for updates of KeePassXC"
+  },
+  {
+    "id": "settings.updates.checkUpdatesDesc",
+    "defaultMessage": "Setup automatic check for KeePassXC updates"
+  },
+  {
+    "id": "settings.updates.everyThreeDays",
+    "defaultMessage": "every 3 days"
+  },
+  {
+    "id": "settings.updates.checkWeekly",
+    "defaultMessage": "every week"
+  },
+  {
+    "id": "settings.updates.checkMonthly",
+    "defaultMessage": "every month"
+  },
+  {
+    "id": "settings.updates.checkNever",
+    "defaultMessage": "never"
+  },
+  {
+    "id": "settings.updates.checkNow",
+    "defaultMessage": "Check now"
+  },
+  {
+    "id": "settings.updates.installedKeePassXCVersion",
+    "defaultMessage": "Installed KeePassXC: {version}"
+  },
+  {
+    "id": "settings.updates.latestKeePassXCVersion",
+    "defaultMessage": "Available KeePassXC: {version}"
+  },
+  {
+    "id": "settings.updates.downloadLink",
+    "defaultMessage": "keepassxc-browser needs KeePassXC to retrieve credentials. You can download the latest stable version from here: {link}"
+  }
+]

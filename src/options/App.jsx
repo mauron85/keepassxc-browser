@@ -9,6 +9,13 @@ import Databases from './Databases';
 import Credentials from './Credentials';
 import About from './About';
 import { AboutIcon, CogIcon, DatabaseIcon, KeyIcon, Logo } from './icons';
+import {
+  associate,
+  loadSettings,
+  getKeepassXCVersions,
+  getPluginVersion
+} from './actions';
+import * as store from './store';
 
 const styles = {
   page: {
@@ -61,6 +68,17 @@ const messages = defineMessages({
   }
 });
 
+const defaultSettings = {
+  blinkTimeout: 7500,
+  blinkMinTimeout: 2000,
+  allowedRedirect: 1,
+  usePasswordGenerator: true,
+  autoRetrieveCredentials: true,
+  autoFillSingleEntry: false,
+  autoCompleteUsernames: true,
+  checkUpdateKeePassXC: 3,
+  autoFillAndSend: true
+};
 
 class App extends Component {
   static propTypes = {
@@ -70,20 +88,63 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      appVersions: {
+        current: 'N/A',
+        latest: 'N/A'
+      },
+      pluginVersion: 'N/A',
       showSnack: false,
       slideIndex: 0
     };
+    this.settings = store.getSettings();
+    const keyRing = store.getKeyRing();
+    const databases =
+      keyRing && Object.keys(keyRing).map(hash => ({ hash, ...keyRing[hash] }));
+    this.databases = databases || [];
   }
 
-  handleChange = (value) => {
+  componentWillMount() {
+    const pluginVersion = getPluginVersion();
+    this.setState({ pluginVersion });
+    getKeepassXCVersions().then(appVersions => this.setState({ appVersions }));
+  }
+
+  handleTabChange = value => {
     this.setState({
-      slideIndex: value,
+      slideIndex: value
     });
   };
 
+  handleSettingChange = (name, value) => {
+    this.settings = {
+      ...this.settings,
+      [name]: value
+    };
+    store.setSettings(this.settings);
+    loadSettings();
+    this.forceUpdate();
+  };
+
+  handleConnect = () => {
+    associate();
+  };
+
+  handleDatabaseDelete = (keepDatabases) => {
+    this.databases = keepDatabases;
+    const keyRing = keepDatabases.reduce((memo, db) => {
+      memo[db.hash] = db;
+      return memo;
+    }, {});
+    store.setKeyRing(keyRing);
+    this.forceUpdate();
+  }
+
   render() {
-    const { slideIndex, showSnack } = this.state;
+    const { slideIndex, showSnack, pluginVersion, appVersions } = this.state;
     const { formatMessage } = this.props.intl;
+    const settings = this.settings;
+    const databases = this.databases;
+
     return (
       <div>
         <AppBar
@@ -92,7 +153,7 @@ class App extends Component {
           titleStyle={styles.title}
           zDepth={0}
         />
-        <Tabs value={slideIndex} onChange={this.handleChange}>
+        <Tabs value={slideIndex} onChange={this.handleTabChange}>
           <Tab
             icon={<CogIcon />}
             label={formatMessage(messages.settings)}
@@ -119,11 +180,23 @@ class App extends Component {
           onChangeIndex={this.handleChange}
         >
           <div style={styles.page}>
-            <Settings />
+            <Settings
+              {...settings}
+              defaults={defaultSettings}
+              onSettingChange={this.handleSettingChange}
+            />
           </div>
-          <div style={styles.page}><Databases /></div>
+          <div style={styles.page}>
+            <Databases
+              databases={databases}
+              onDelete={this.handleDatabaseDelete}
+              onConnect={this.handleConnect}
+            />
+          </div>
           <div style={styles.page}><Credentials /></div>
-          <div style={styles.page}><About /></div>
+          <div style={styles.page}>
+            <About pluginVersion={pluginVersion} appVersions={appVersions} />
+          </div>
         </SwipeableViews>
         <Snackbar
           open={showSnack}

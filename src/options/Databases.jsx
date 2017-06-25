@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   FormattedMessage,
   FormattedDate,
@@ -27,22 +28,6 @@ import { cyan50, cyan500, transparent } from 'material-ui/styles/colors';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import BinIcon from './icons/Bin';
-
-let databasesFixture = [
-  {
-    id: 'keepassxc',
-    key: 'aWfsV/9Ff4BsrB2a8ddYAQfwE9QB5UjCDJH0zM/3p8M=',
-    lastUsed: '2017-06-23T08:06:08.218Z',
-    created: '2017-06-23T08:00:00.000Z'
-  },
-  {
-    id: 'keepassxc-2',
-    key: 'aWfsV/9Ff4BsrB2a8ddYAQfwE9QB5UjCDJH0zM/3p8M=',
-    lastUsed: '2017-06-13T08:06:08.218Z',
-    created: '2017-05-13T08:00:00.000Z'
-  }
-];
-// databases = [];
 
 const styles = {
   smallIcon: {
@@ -122,15 +107,17 @@ const messages = defineMessages({
 
 class Databases extends Component {
   static propTypes = {
-    intl: intlShape.isRequired
+    intl: intlShape.isRequired,
+    databases: PropTypes.array.isRequired,
+    onConnect: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired
   };
 
   constructor(props) {
     super(props);
     this.state = {
       selectedRows: [],
-      showConfirmDialog: false,
-      databases: databasesFixture
+      showConfirmDialog: false
     };
     this.handleRowSelection = this.handleRowSelection.bind(this);
     this.handleShowRemoveDialog = this.handleShowRemoveDialog.bind(this);
@@ -151,28 +138,27 @@ class Databases extends Component {
   }
 
   handleRemove() {
-    const { databases, selectedRows } = this.state;
+    const { selectedRows } = this.state;
+    const { databases } = this.props;
     let keepDatabases = databases;
     if (selectedRows === 'all') {
       keepDatabases = [];
     } else if (selectedRows.length > 0) {
-      keepDatabases = databases.filter((db, index) =>
-        !selectedRows.includes(index)
+      keepDatabases = databases.filter(
+        (db, index) => !selectedRows.includes(index)
       );
     } else {
       return false;
     }
-    this.setState({
-      databases: keepDatabases,
-      selectedRows: [],
-      showConfirmDialog: false
-    });
+    this.props.onDelete(keepDatabases);
+    this.setState({ selectedRows: [], showConfirmDialog: false });
     return true;
   }
 
   render() {
-    const { selectedRows, showConfirmDialog, databases } = this.state;
+    const { selectedRows, showConfirmDialog } = this.state;
     const { formatMessage } = this.props.intl;
+    const { databases, onConnect } = this.props;
 
     const actions = [
       <FlatButton
@@ -217,7 +203,7 @@ class Databases extends Component {
                   </IconButton>
                 </div>
               : <div style={styles.actionButtons}>
-                  <FlatButton primary label="Connect" />
+                  <FlatButton primary label="Connect" onTouchTap={onConnect} />
                 </div>}
           </div>
           <div>
@@ -237,8 +223,8 @@ class Databases extends Component {
                 </TableHeader>
                 <TableBody deselectOnClickaway={false}>
                   {databases.map(({ id, key, lastUsed, created }, rowIndex) => {
-                    const lastUsedDate = new Date(lastUsed);
-                    const createdDate = new Date(created);
+                    const lastUsedDate = lastUsed && new Date(lastUsed);
+                    const createdDate = created && new Date(created);
                     return (
                       <TableRow
                         key={id}
@@ -250,8 +236,11 @@ class Databases extends Component {
                         <TableRowColumn>{id}</TableRowColumn>
                         <TableRowColumn>{key}</TableRowColumn>
                         <TableRowColumn>
-                          <FormattedDate value={lastUsedDate} />{' '}
-                          <FormattedTime value={lastUsedDate} />
+                          {lastUsedDate &&
+                            <span>
+                              <FormattedDate value={lastUsedDate} />{' '}
+                              <FormattedTime value={lastUsedDate} />
+                            </span>}
                         </TableRowColumn>
                         <TableRowColumn>
                           <FormattedDate value={createdDate} />{' '}

@@ -18,7 +18,7 @@ const locales = {
   sk: () =>
     Promise.all([
       import('react-intl/locale-data/sk'),
-      import('./translations/locales/sk.json')
+      import('../translations/locales/sk.json')
     ])
 };
 
@@ -88,4 +88,7 @@ const run = () => {
 };
 
 run();
-if (module.hot) module.hot.accept('./App', () => run());
+if (module.hot) module.hot.accept('./App', () => {
+  console.log('[DEBUG] module is hot');
+  run();
+});

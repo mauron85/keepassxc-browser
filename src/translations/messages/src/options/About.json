@@ -1,0 +1,14 @@
+[
+  {
+    "id": "about.title",
+    "defaultMessage": "Contributors"
+  },
+  {
+    "id": "about.vesions",
+    "defaultMessage": "Versions"
+  },
+  {
+    "id": "about.projectPages",
+    "defaultMessage": "Project pages"
+  }
+]

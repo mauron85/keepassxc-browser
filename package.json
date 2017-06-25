@@ -4,7 +4,7 @@
   "description": "Chrome extension for KeePassXC with Native Messaging",
   "scripts": {
     "clean:dist": "rimraf dist",
-    "copy:dist": "mkdir -p dist && cp -r src/images dist/images && cp src/index.html dist/",
+    "copy:dist": "copyfiles -u 1 src/* src/icons/** src/popups/** src/background/** src/vendor/** dist/",
     "manage:locales": "BABEL_ENV=i18n babel src > /dev/null",
     "manage:translations": "node ./translationRunner.js",
     "intl": "npm run manage:locales && npm run manage:translations",
@@ -28,7 +28,8 @@
     "react-hot-loader": "^3.0.0-beta.7",
     "react-intl": "^2.3.0",
     "react-swipeable-views": "^0.12.3",
-    "react-tap-event-plugin": "^2.0.1"
+    "react-tap-event-plugin": "^2.0.1",
+    "tweetnacl": "^1.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.25.0",
@@ -38,6 +39,7 @@
     "babel-preset-env": "^1.5.2",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
+    "copyfiles": "^1.2.0",
     "eslint": "^3.9.1",
     "eslint-config-airbnb": "^14.1.0",
     "eslint-module-utils": "^2.0.0",

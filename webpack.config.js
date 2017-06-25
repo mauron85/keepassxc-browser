@@ -7,7 +7,7 @@ module.exports = {
       'react-hot-loader/patch',
       'webpack-dev-server/client?http://localhost:8080',
       'webpack/hot/only-dev-server',
-      './src/index.js',
+      './src/options/index.js',
     ]
   },
   output: {
@@ -28,7 +28,7 @@ module.exports = {
   devServer: {
     port: 8080,
     hot: true,
-    inline: true,
+    // inline: true,
     contentBase: path.resolve(__dirname, 'src'),
     publicPath: '/'
   },

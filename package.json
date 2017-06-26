@@ -5,14 +5,15 @@
   "scripts": {
     "clean:dist": "rimraf dist",
     "clean:preview": "rimraf preview",
-    "copy:dist": "copyfiles -u 1 src/* src/icons/** src/popups/** src/background/** src/vendor/** dist/",
+    "copy:dist": "copyfiles -u 1 src/* src/icons/{*,**}/* src/popups/{*,**}/* src/background/{*,**}/* src/vendor/{*,**}/* dist/",
     "copy:preview": "copyfiles -u 1 src/*.{html,ico} src/icons/** preview/",
     "manage:locales": "BABEL_ENV=i18n babel src > /dev/null",
     "manage:translations": "node ./translationRunner.js",
     "intl": "npm run manage:locales && npm run manage:translations",
     "start": "npm run intl && webpack-dev-server",
-    "build": "npm run clean:dist && npm run copy:dist && webpack --progress --config webpack.config.prod.js",
+    "build": "npm run clean:dist && npm run copy:dist && webpack --progress --config webpack.config.prod.js && npm run build:popup",
     "build:preview": "npm run clean:preview && npm run copy:preview && webpack --progress --config webpack.config.preview.js",
+    "build:popup": "webpack --progress --config webpack.config.popup.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -24,6 +25,7 @@
   "author": "",
   "license": "GNU",
   "dependencies": {
+    "hyperapp": "^0.9.3",
     "lodash": "^4.17.4",
     "material-ui": "^0.18.3",
     "prop-types": "^15.5.10",
@@ -40,6 +42,7 @@
     "babel-eslint": "^7.2.3",
     "babel-loader": "^7.1.0",
     "babel-plugin-react-intl": "^2.3.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.5.2",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",

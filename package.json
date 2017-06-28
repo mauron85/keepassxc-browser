@@ -5,15 +5,18 @@
   "scripts": {
     "clean:dist": "rimraf dist",
     "clean:preview": "rimraf preview",
-    "copy:dist": "copyfiles -u 1 src/* src/icons/{*,**}/* src/popups/{*,**}/* src/background/{*,**}/* src/vendor/{*,**}/* dist/",
+    "copy:dist": "copyfiles -u 1 src/* src/icons/{*,**}/* src/popups/{*,**}/* src/content_scripts/{*,**}/* src/vendor/{*,**}/* dist/",
     "copy:preview": "copyfiles -u 1 src/*.{html,ico} src/icons/** preview/",
     "manage:locales": "BABEL_ENV=i18n babel src > /dev/null",
     "manage:translations": "node ./translationRunner.js",
     "intl": "npm run manage:locales && npm run manage:translations",
     "start": "npm run intl && webpack-dev-server",
-    "build": "npm run clean:dist && npm run copy:dist && webpack --progress --config webpack.config.prod.js && npm run build:popup",
     "build:preview": "npm run clean:preview && npm run copy:preview && webpack --progress --config webpack.config.preview.js",
+    "build:background": "webpack --progress --config webpack.config.background.js",
+    "build:contentScripts": "webpack --progress --config webpack.config.contentScripts.js",
+    "build:options": "webpack --progress --config webpack.config.prod.js",
     "build:popup": "webpack --progress --config webpack.config.popup.js",
+    "build": "npm run clean:dist && npm run copy:dist && npm run build:background && npm run build:contentScripts && npm run build:options && npm run build:popup",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -35,7 +38,8 @@
     "react-intl": "^2.3.0",
     "react-swipeable-views": "^0.12.3",
     "react-tap-event-plugin": "^2.0.1",
-    "tweetnacl": "^1.0.0"
+    "tweetnacl": "^1.0.0",
+    "zepto": "^1.2.0"
   },
   "devDependencies": {
     "babel-core": "^6.25.0",
@@ -54,9 +58,12 @@
     "eslint-plugin-import": "^2.1.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.4.1",
+    "imports-loader": "^0.7.1",
     "json-loader": "^0.5.4",
     "react-intl-translations-manager": "^5.0.0",
     "rimraf": "^2.6.1",
+    "ts-loader": "^2.2.0",
+    "typescript": "^2.3.4",
     "webpack": "^2.6.1",
     "webpack-dev-server": "^2.5.0"
   }

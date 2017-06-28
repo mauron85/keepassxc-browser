@@ -24,34 +24,36 @@
 	},
 	"background": {
 		"scripts": [
-			"background/nacl.min.js",
-			"background/nacl-util.min.js",
-			"background/keepass.js",
-			"background/httpauth.js",
-			"background/browserAction.js",
-			"background/page.js",
-			"background/event.js",
-			"background/init.js"
-		]
+			"background/index.js"
+			// "background/nacl.min.js",
+			// "background/nacl-util.min.js",
+			// "background/keepass.js",
+			// "background/httpauth.js",
+			// "background/browserAction.js",
+			// "background/page.js",
+			// "background/event.js",
+			// "background/init.js"
+		],
+		"persistent": false
 	},
 	"content_scripts": [
 		{
 			"matches": [ "http://*/*", "https://*/*" ],
-			"js": [ "vendor/jquery-3.2.1.min.js", "vendor/jquery-ui.min.js", "keepassxc-browser.js" ],
-			"css": [ "vendor/jquery-ui.min.css", "keepassxc-browser.css" ],
-			"run_at": "document_idle",
+			"js": [ "content_scripts/index.js" ],
+			"css": [ "content_scripts/keepassxc-browser.css" ],
+			"run_at": "document_start",
 			"all_frames": true
 		}
 	],
 	"commands": {
-		"fill-username-password": {
+		"fill_username_password": {
 			"description": "Insert username + password",
 			"suggested_key": {
 				"default": "Ctrl+Shift+U",
 				"mac": "Command+Shift+U"
 			}
 		},
-		"fill-password": {
+		"fill_password": {
 			"description": "Insert a password",
 			"suggested_key": {
 				"default": "Ctrl+Shift+P",
@@ -68,8 +70,8 @@
 		"clipboardWrite",
 		"nativeMessaging",
 		"tabs",
-		"webRequest",
-		"webRequestBlocking",
+		// "webRequest",
+		// "webRequestBlocking",
 		"https://raw.github.com/"
 	],
 	"applications": {

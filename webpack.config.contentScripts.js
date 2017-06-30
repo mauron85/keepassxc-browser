@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/content_scripts/index.ts',
+  entry: './src/content_scripts/index.tsx',
   output: {
     path: path.join(__dirname, 'dist', 'content_scripts'),
     filename: 'index.js'
@@ -21,7 +21,7 @@ module.exports = {
         }
       },
       // all files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'
-      { test: /\.tsx?$/, loader: 'ts-loader' }
+      { test: /\.tsx?$/, loader: 'babel-loader!ts-loader' }
     ]
   }
 };

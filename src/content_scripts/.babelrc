@@ -1,0 +1,24 @@
+{
+  "presets": [
+    ["env", {
+      "targets": {
+        "chrome": 59
+      }
+    }]
+  ],
+  "plugins": [
+/* if you want to target old browsers you'll need to enable transform-runtime */
+/*
+    ["transform-runtime", {
+      "polyfill": false,
+      "regenerator": true
+    }],
+*/    
+    [
+      "transform-react-jsx",
+      {
+        "pragma": "h"
+      }
+    ]
+  ]
+}

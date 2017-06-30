@@ -16,7 +16,7 @@
     "build:contentScripts": "webpack --progress --config webpack.config.contentScripts.js",
     "build:options": "webpack --progress --config webpack.config.prod.js",
     "build:popup": "webpack --progress --config webpack.config.popup.js",
-    "build": "npm run clean:dist && npm run copy:dist && npm run build:background && npm run build:contentScripts && npm run build:options && npm run build:popup",
+    "build": "npm run clean:dist && npm run copy:dist && npm run build:background && npm run build:options && npm run build:popup && npm run build:contentScripts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -28,6 +28,7 @@
   "author": "",
   "license": "GNU",
   "dependencies": {
+    "@types/react": "^15.0.33",
     "hyperapp": "^0.9.3",
     "lodash": "^4.17.4",
     "material-ui": "^0.18.3",

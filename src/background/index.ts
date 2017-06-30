@@ -3,6 +3,7 @@ import * as nacl from 'tweetnacl';
 import { contextMenu } from './contextMenu';
 import * as T from '../common/actionTypes';
 import browser from '../common/browser';
+import * as store from '../common/store';
 
 /** 
  * Create contextMenu from template
@@ -53,4 +54,16 @@ browser.commands.onCommand.addListener(command => {
   }
 
   return true;
+});
+
+browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  switch(msg.action) {
+    case T.GET_OPTIONS:
+      sendResponse(store.getOptions());
+      return true;
+    case T.GET_CREDENTIALS:
+      sendResponse();
+    default:
+      return false;
+  }
 });

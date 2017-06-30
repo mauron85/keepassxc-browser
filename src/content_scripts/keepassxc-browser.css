@@ -1,13 +1,63 @@
+.keepassxc {
+	position: absolute !important;
+	z-index: 9999 !important;
+	top: 0 !important;
+	left: 0 !important;
+	font-family: 'Roboto', sans-serif !important;
+	font-size: 14px !important;
+}
+
+.card {
+  position: relative !important;
+  display: inline-block !important;
+  width: 100% !important;
+  background: #fff !important;
+  border-radius: 2px !important;
+}
+
+.card-2 {
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23) !important;
+}
+
+.card--credentials {
+	margin-top: 5px !important;
+}
+
+.keepassxc-credentials-menu {
+	list-style-type: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	line-height: 30px !important;
+}
+
+.keepassxc-credentials-menu--empty {
+	height: 30px !important;
+}
+
+.keepassxc-credentials-menu__item {
+	cursor: pointer !important;
+	outline: none !important;
+	margin: 0px !important;
+	padding-left: 16px !important;
+	color: rgba(0, 0, 0, 0.87) !important;
+	transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms !important;
+	border-bottom: 1px solid rgb(224, 224, 224) !important;
+}
+
+.keepassxc-credentials-menu__item:hover {
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
 .keepassxc-username-field {
-	background-image: url(chrome-extension://__MSG_@@extension_id__/icons/key_16x16.png);
-	background-position: right;
-	background-repeat: no-repeat;	
+	background-image: url(chrome-extension://__MSG_@@extension_id__/icons/key.svg) !important;
+	background-position: right 5px center !important;
+	background-repeat: no-repeat !important;
 }
 
 .keepassxc-password-field {
-	background-image: url(chrome-extension://__MSG_@@extension_id__/icons/key_16x16.png);
-	background-position: 7px 7px;
-	background-repeat: no-repeat;	
+	background-image: url(chrome-extension://__MSG_@@extension_id__/icons/key.svg) !important;
+	background-position: right 5px center !important;
+	background-repeat: no-repeat !important;
 }
 
 .cip-ui-autocomplete li.cip-ui-menu-item {

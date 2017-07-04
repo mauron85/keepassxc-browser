@@ -1,24 +1,10 @@
 import browser from '../../common/browser';
 import * as T from '../../common/actionTypes';
 
-export function getOptions() {
+export function getSettings() {
   return new Promise((resolve) => {
-    browser.runtime.sendMessage({ action: T.GET_OPTIONS }, (options) => {
-      resolve(options);
+    browser.runtime.sendMessage({ action: T.GET_SETTINGS }, (settings) => {
+      resolve(settings);
     });
-  });
-}
-
-export function retrieveCredentials({ url, submitUrl }) {
-  return new Promise(resolve => {
-    browser.runtime.sendMessage(
-      {
-        action: 'retrieve_credentials',
-        args: [url, submitUrl]
-      },
-      (credentials, dontAutoFillIn) => {
-        resolve([credentials, dontAutoFillIn]);
-      }
-    );
   });
 }

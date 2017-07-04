@@ -8,7 +8,9 @@
         "allowJs": true,
         "checkJs": true,
         "jsx": "React",
-        "jsxFactory": "h"
+        "jsxFactory": "h",
+        "types": [],
+        "sourceMap": true
     },
     "include": [
         "./**/*"

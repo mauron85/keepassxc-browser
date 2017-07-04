@@ -34,7 +34,7 @@
 			// "background/event.js",
 			// "background/init.js"
 		],
-		"persistent": false
+		"persistent": true
 	},
 	"content_scripts": [
 		{

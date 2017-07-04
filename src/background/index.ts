@@ -1,9 +1,13 @@
 /* globals window */
-import * as nacl from 'tweetnacl';
+import { createStore, applyMiddleware } from 'redux'
+import createSagaMiddleware from 'redux-saga'
 import { contextMenu } from './contextMenu';
-import * as T from '../common/actionTypes';
+import * as keepass from './keepass';
 import browser from '../common/browser';
-import * as store from '../common/store';
+import * as storage from '../common/store';
+import rootReducer from './reducers';
+import rootSaga from './sagas';
+import * as T from '../common/actionTypes';
 
 /** 
  * Create contextMenu from template
@@ -57,13 +61,27 @@ browser.commands.onCommand.addListener(command => {
 });
 
 browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  switch(msg.action) {
-    case T.GET_OPTIONS:
-      sendResponse(store.getOptions());
+  switch (msg.action) {
+    case T.GET_SETTINGS:
+      sendResponse(storage.getSettings());
       return true;
-    case T.GET_CREDENTIALS:
-      sendResponse();
     default:
       return false;
   }
 });
+
+const preloadedState = {
+  publicKey: null,
+  secretKey: null,
+  serverPublicKey: null,
+  associatedDatabases: storage.getKeyRing()
+};
+
+const sagaMiddleware = createSagaMiddleware()
+const store = createStore(
+  rootReducer,
+  preloadedState,
+  applyMiddleware(sagaMiddleware)
+);
+sagaMiddleware.run(rootSaga);
+

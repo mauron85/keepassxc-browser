@@ -25,71 +25,90 @@ function calcMenuPositionRelativeToElement(el) {
 }
 
 let run = () => {
+  let port;
+  const defaultState = { appState: state.INITIAL };
   const el = document.body.appendChild(document.createElement('div'));
   el.className = 'keepassxc';
-
-  const mockCredentials = [{ id: 1, username: 'john', password: 'wick' }];
-  const defaultState = { appState: state.INITIAL };
 
   app({
     state: defaultState,
     view: (state, actions) => {
-      const { appState, menuPosition } = state;
+      const { appState, menuPosition, credentials } = state;
       switch (appState) {
         case state.SHOW_CREDENTIALS_MENU:
           return (
             <CredentialsMenu
               {...menuPosition}
-              credentials={mockCredentials}
-              onSelect={actions.onSelect}
+              credentials={credentials}
+              onSelect={actions.onCredentialSelect}
             />
           );
         default:
-          return <div/>;
+          return <div />;
       }
     },
     actions: {
       setState: (currentState, __, newState) => {
         return Object.assign({}, currentState, newState);
       },
-      onSelect: (state, actions, credentialId) => {
+      onCredentialSelect: (state, actions, credentialId) => {
+        console.log('Selected credentials', credentialId);
+
         actions.setState(defaultState);
       }
     },
     events: {
       loaded: async (state, actions) => {
-        browser.runtime.onMessage.addListener(msg => {
-          console.log(msg);
+        const settings = await getSettings();
+
+        port = browser.runtime.connect({ name: 'content_script' });
+        port.onMessage.addListener(msg => {
+          switch (msg.action) {
+            case T.GET_CREDENTIALS_SUCCESS:
+              actions.setState({ credentials: msg.payload });
+              return true;
+            case T.GET_CREDENTIALS_FAILURE:
+              console.log(msg.payload);
+              // actions.setState({ credentials: msg.payload });
+              return true
+            default:
+              return false;
+          }
         });
-        const options = await getOptions();
 
         // attach single global event listener
-        // only process click on text and email inputs
         document.addEventListener('click', event => {
-          if (['text', 'email'].indexOf((event.target as HTMLInputElement).type) > -1) {
-            // TODO: add confidence check
-            const element = event.target;
-            element.addEventListener('blur', () => {
-              actions.setState(defaultState);
-            }, { once: true });
-
-            const menuPosition = calcMenuPositionRelativeToElement(element);
-            actions.setState({ appState: state.SHOW_CREDENTIALS_MENU , menuPosition });
+          // only process text and email inputs
+          const el = event.target as HTMLInputElement;
+          if (['text', 'email'].indexOf(el.type) < 0) {
+            return false;
           }
+
+          // TODO: add confidence check
+
+          const origin = document.location.origin;
+          const formAction = (el.closest('form') as HTMLFormElement).action;
+          port.postMessage({
+            type: T.GET_CREDENTIALS,
+            payload: { origin, formAction }
+          });
+
+          el.addEventListener(
+            'blur',
+            () => setTimeout(() => actions.setState(defaultState), 250),
+            { once: true }
+          );
+
+          const menuPosition = calcMenuPositionRelativeToElement(el);
+          actions.setState({
+            appState: state.SHOW_CREDENTIALS_MENU,
+            menuPosition
+          });
         });
 
         const [usernameEl, passwordEl] = getFormFields(10);
         if (passwordEl) {
           passwordEl.className += ' keepassxc-password-field';
-        }
-        if (usernameEl) {
-          usernameEl.addEventListener('click', () => {
-            const menuPosition = calcMenuPositionRelativeToElement(usernameEl);
-            actions.setState({ appState: state.SHOW_CREDENTIALS_MENU , menuPosition });
-          });
-          usernameEl.addEventListener('blur', () => {
-            actions.setState(defaultState);
-          });
         }
       }
     },

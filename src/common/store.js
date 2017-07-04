@@ -1,10 +1,10 @@
 /* globals localStorage */
 
-const OPTIONS_KEY = 'settings';
+const SETTINGS_KEY = 'settings';
 const KEYRING_KEY = 'keyRing';
 
 /**
- * @typedef {object} Options
+ * @typedef {Object} Settings
  * @property {number} blinkTimeout
  * @property {number} blinkMinTimeout
  * @property {number} allowedRedirect
@@ -15,8 +15,8 @@ const KEYRING_KEY = 'keyRing';
  * @property {boolean} autoFillAndSend
  * @property {number} checkUpdateKeePassXC
  */
-/** @type {Options} */
-const defaultOptions = {
+/** @type {Settings} */
+export const defaultSettings = {
   blinkTimeout: 7500,
   blinkMinTimeout: 2000,
   allowedRedirect: 1,
@@ -28,23 +28,37 @@ const defaultOptions = {
   checkUpdateKeePassXC: 3
 };
 
-/** @return {Options} - options */
-export function getOptions() {
-  const optionsString = localStorage.getItem(OPTIONS_KEY);
-  if (optionsString) {
-    /** @type {Options} */
-    const options = JSON.parse(optionsString);
-    return options;
+/**
+ * @typedef KeePassDb
+ * @type {Object}
+ * @property {string} id
+ * @property {string} key
+ */
+
+/**
+ * @typedef AssociatedDatabases
+ * @type {Object.<string, KeePassDb>}
+ */
+
+
+/** @return {Settings} - settings */
+export function getSettings() {
+  const settingsString = localStorage.getItem(SETTINGS_KEY);
+  if (settingsString) {
+    /** @type {Settings} */
+    const settings = JSON.parse(settingsString);
+    return Object.assign({}, defaultSettings, settings);
   }
-  return defaultOptions;
+  return defaultSettings;
 }
 
 
-/** @param {Options} - options object */
-export function setOptions(options) {
-  localStorage.setItem(OPTIONS_KEY, JSON.stringify(options));
+/** @param {Settings} settings object */
+export function setSettings(settings) {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
 }
 
+/** @return {AssociatedDatabases} - associated databases */
 export function getKeyRing() {
   const keyRing = localStorage.getItem(KEYRING_KEY);
   if (keyRing) {
@@ -53,6 +67,7 @@ export function getKeyRing() {
   return {};
 }
 
+/** @param {AssociatedDatabases} keyRing associated databases */
 export function setKeyRing(keyRing) {
   localStorage.setItem(KEYRING_KEY, JSON.stringify(keyRing));
 }

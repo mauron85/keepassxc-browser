@@ -17,7 +17,7 @@
     "build:options": "webpack --progress --config webpack.config.prod.js",
     "build:popup": "webpack --progress --config webpack.config.popup.js",
     "build": "npm run clean:dist && npm run copy:dist && npm run build:background && npm run build:options && npm run build:popup && npm run build:contentScripts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --config=jest.config.js"
   },
   "keywords": [
     "google",
@@ -28,7 +28,6 @@
   "author": "",
   "license": "GNU",
   "dependencies": {
-    "@types/react": "^15.0.33",
     "hyperapp": "^0.9.3",
     "lodash": "^4.17.4",
     "material-ui": "^0.18.3",
@@ -39,12 +38,18 @@
     "react-intl": "^2.3.0",
     "react-swipeable-views": "^0.12.3",
     "react-tap-event-plugin": "^2.0.1",
+    "redux": "^3.7.1",
+    "redux-saga": "^0.15.4",
     "tweetnacl": "^1.0.0",
+    "tweetnacl-util": "^0.15.0",
     "zepto": "^1.2.0"
   },
   "devDependencies": {
+    "@types/jest": "^20.0.2",
+    "@types/react": "^15.0.33",
     "babel-core": "^6.25.0",
     "babel-eslint": "^7.2.3",
+    "babel-jest": "^20.0.3",
     "babel-loader": "^7.1.0",
     "babel-plugin-react-intl": "^2.3.1",
     "babel-plugin-transform-runtime": "^6.23.0",
@@ -60,9 +65,12 @@
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.4.1",
     "imports-loader": "^0.7.1",
+    "jest": "^20.0.4",
     "json-loader": "^0.5.4",
     "react-intl-translations-manager": "^5.0.0",
+    "regenerator-runtime": "^0.10.5",
     "rimraf": "^2.6.1",
+    "ts-jest": "^20.0.6",
     "ts-loader": "^2.2.0",
     "typescript": "^2.3.4",
     "webpack": "^2.6.1",

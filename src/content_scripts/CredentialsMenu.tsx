@@ -26,7 +26,6 @@ const CredentialsMenu = ({ top, left, width, credentials, onSelect }) => {
     width: width > MIN_WIDTH ? `${Math.round(width)}px` : `${MIN_WIDTH}px`,
     minHeight: '30px'
   };
-  console.log(credentials);
   return (
     <div style={style}>
       <div className="card card-2 card--credentials">

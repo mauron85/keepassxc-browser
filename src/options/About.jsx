@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
   FormattedMessage,
@@ -19,6 +19,7 @@ import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton';
 import { pinkA200, transparent } from 'material-ui/styles/colors';
 import { GithubIcon, WebsiteIcon } from './icons';
+import { getKeepassXCVersion, getPluginVersion } from './actions';
 
 const styles = {
   logos: {
@@ -77,100 +78,119 @@ const WebStoreLogo = () =>
 const GithubLogo = () =>
   <img src="icons/GitHub_Logo.png" alt="fork me on github" />;
 
-const About = ({ appVersions, pluginVersion }) => {
-  const { current } = appVersions;
-  return (
-    <div>
-      <div className="header">
-        <h2 className="title"><FormattedMessage {...messages.title} /></h2>
-      </div>
-      <Card>
-        <List>
-          <a href="https://github.com/pfn/">
-            <ListItem primaryText="Perry Nguyen" leftIcon={<GithubIcon />} />
-          </a>
-          <Divider />
-          <a href="http://lukas-schulze.de/">
-            <ListItem primaryText="Lukas Schulze" leftIcon={<WebsiteIcon />} />
-          </a>
-          <Divider />
-          <a href="https://github.com/varjolintu/">
-            <ListItem primaryText="Sami Vänttinen" leftIcon={<GithubIcon />} />
-          </a>
-        </List>
-      </Card>
-      <div className="header">
-        <h2 className="title"><FormattedMessage {...messages.versions} /></h2>
-      </div>
-      <Card>
-        <List>
-          <ListItem disabled primaryText={`keepassxc-browser: ${pluginVersion}`} />
-          <ListItem disabled primaryText={`KeePassXC: ${current}`} />
-        </List>
-      </Card>
-      <div className="header">
-        <h2 className="title">
-          <FormattedMessage {...messages.projectPages} />
-        </h2>
-      </div>
-      <Card>
-        <CardText>
-          <div style={styles.logos}>
-            <div style={styles.logo}>
-              <a href="https://github.com/varjolintu/keepassxc-browser">
-                <GithubLogo />
-              </a>
+class About extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      keepassXCVersion: 'N/A',
+      pluginVersion: 'N/A'
+    };
+    Promise.all([
+      getKeepassXCVersion(),
+      getPluginVersion()
+    ])
+    .then(([currentVersion, pluginVersion]) => {
+      this.setState({ currentVersion, pluginVersion });
+    });
+  }
+
+  render() {
+    const { keepassXCVersion, pluginVersion } = this.state;
+    return (
+      <div>
+        <div className="header">
+          <h2 className="title"><FormattedMessage {...messages.title} /></h2>
+        </div>
+        <Card>
+          <List>
+            <a href="https://github.com/pfn/">
+              <ListItem primaryText="Perry Nguyen" leftIcon={<GithubIcon />} />
+            </a>
+            <Divider />
+            <a href="http://lukas-schulze.de/">
+              <ListItem
+                primaryText="Lukas Schulze"
+                leftIcon={<WebsiteIcon />}
+              />
+            </a>
+            <Divider />
+            <a href="https://github.com/varjolintu/">
+              <ListItem
+                primaryText="Sami Vänttinen"
+                leftIcon={<GithubIcon />}
+              />
+            </a>
+          </List>
+        </Card>
+        <div className="header">
+          <h2 className="title"><FormattedMessage {...messages.versions} /></h2>
+        </div>
+        <Card>
+          <List>
+            <ListItem
+              disabled
+              primaryText={`keepassxc-browser: ${pluginVersion}`}
+            />
+            <ListItem disabled primaryText={`KeePassXC: ${keepassXCVersion}`} />
+          </List>
+        </Card>
+        <div className="header">
+          <h2 className="title">
+            <FormattedMessage {...messages.projectPages} />
+          </h2>
+        </div>
+        <Card>
+          <CardText>
+            <div style={styles.logos}>
+              <div style={styles.logo}>
+                <a href="https://github.com/varjolintu/keepassxc-browser">
+                  <GithubLogo />
+                </a>
+              </div>
+              <div style={styles.logo}>
+                <a href="https://chrome.google.com/webstore/detail/keepassxc-browser/iopaggbpplllidnfmcghoonnokmjoicf">
+                  <WebStoreLogo />
+                </a>
+              </div>
             </div>
-            <div style={styles.logo}>
-              <a href="https://chrome.google.com/webstore/detail/keepassxc-browser/iopaggbpplllidnfmcghoonnokmjoicf">
-                <WebStoreLogo />
-              </a>
-            </div>
-          </div>
-        </CardText>
-      </Card>
-      <ul style={styles.copyrights}>
-        <li style={styles.line}>
-          2010-2017 - Perry Nguyen, Lukas Schulze, Sami Vänttinen
-        </li>
-        <li>
-          Icons made by{' '}
-          <a href="http://www.freepik.com" title="Freepik">
-            Freepik
-          </a>{' '}
-          from{' '}
-          <a href="http://www.flaticon.com" title="Flaticon">
-            www.flaticon.com
-          </a>{' '}
-          is
-          licensed by{' '}
-          <a
-            href="http://creativecommons.org/licenses/by/3.0/"
-            title="Creative Commons BY 3.0"
-            target="_blank"
-          >
-            CC 3.0 BY
-          </a>
-        </li>
-      </ul>
-    </div>
-  );
-};
+          </CardText>
+        </Card>
+        <ul style={styles.copyrights}>
+          <li style={styles.line}>
+            2010-2017 - Perry Nguyen, Lukas Schulze, Sami Vänttinen
+          </li>
+          <li>
+            Icons made by{' '}
+            <a href="http://www.freepik.com" title="Freepik">
+              Freepik
+            </a>{' '}
+            from{' '}
+            <a href="http://www.flaticon.com" title="Flaticon">
+              www.flaticon.com
+            </a>{' '}
+            is
+            licensed by{' '}
+            <a
+              href="http://creativecommons.org/licenses/by/3.0/"
+              title="Creative Commons BY 3.0"
+              target="_blank"
+            >
+              CC 3.0 BY
+            </a>
+          </li>
+        </ul>
+      </div>
+    );
+  }
+}
 
 About.propTypes = {
-  pluginVersion: PropTypes.string.isRequired,
-  appVersions: PropTypes.shape({
-    current: PropTypes.string.isRequired,
-    latest: PropTypes.string.isRequired
-  }),
+  keepassXCVersion: PropTypes.string.isRequired,
+  pluginVersion: PropTypes.string.isRequired
 };
-
 
 About.defaultProps = {
   pluginVersion: 'N/A',
-  appVersions: {
-    current: 'N/A',
-    latest: 'N/A'
-  }
+  keepassXCVersion: 'N/A'
 };
 export default injectIntl(About);

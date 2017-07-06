@@ -222,9 +222,9 @@ class Databases extends Component {
                   </TableRow>
                 </TableHeader>
                 <TableBody deselectOnClickaway={false}>
-                  {databases.map(({ id, key, lastUsed, created }, rowIndex) => {
-                    const lastUsedDate = lastUsed && new Date(lastUsed);
-                    const createdDate = created && new Date(created);
+                  {databases.map(({ id, hash, lastUsedAt, createdAt }, rowIndex) => {
+                    const lastUsedDate = lastUsedAt && new Date(lastUsedAt);
+                    const createdDate = createdAt && new Date(createdAt);
                     return (
                       <TableRow
                         key={id}
@@ -234,7 +234,7 @@ class Databases extends Component {
                         }
                       >
                         <TableRowColumn>{id}</TableRowColumn>
-                        <TableRowColumn>{key}</TableRowColumn>
+                        <TableRowColumn>{hash}</TableRowColumn>
                         <TableRowColumn>
                           {lastUsedDate &&
                             <span>

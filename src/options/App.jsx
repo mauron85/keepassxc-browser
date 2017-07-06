@@ -10,13 +10,10 @@ import Databases from './Databases';
 import Credentials from './Credentials';
 import About from './About';
 import { AboutIcon, CogIcon, DatabaseIcon, KeyIcon, Logo } from './icons';
-import {
-  associate,
-  loadSettings,
-  getKeepassXCVersions,
-  getPluginVersion
-} from './actions';
-import * as store from './store';
+import browser from '../common/browser';
+import * as T from '../common/actionTypes';
+import { defaultSettings } from '../common/store';
+import { getSettings, getAssociatedDatabases, getCredentialFields } from './actions';
 
 const styles = {
   page: {
@@ -69,19 +66,6 @@ const messages = defineMessages({
   }
 });
 
-const defaultSettings = {
-  blinkTimeout: 7500,
-  blinkMinTimeout: 2000,
-  allowedRedirect: 1,
-  usePasswordGenerator: true,
-  autoRetrieveCredentials: true,
-  autoFillSingleEntry: false,
-  autoCompleteUsernames: true,
-  checkUpdateKeePassXC: 3,
-  autoFillAndSend: true,
-  'defined-credential-fields': {}
-};
-
 class App extends Component {
   static propTypes = {
     intl: intlShape.isRequired
@@ -90,29 +74,27 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      appVersions: {
-        current: 'N/A',
-        latest: 'N/A'
-      },
-      pluginVersion: 'N/A',
+      settings: null,
+      associatedDatabases: [],
+      credentialFields: [],
       showSnack: false,
       slideIndex: 0
     };
-    const settings = Object.assign({}, defaultSettings, store.getSettings());
-    const keyRing = store.getKeyRing();
-    const databases =
-      keyRing && Object.keys(keyRing).map(hash => ({ hash, ...keyRing[hash] }));
-    this.settings = settings;
-    this.databases = databases || [];
-    this.credentials = Object.keys(
-      settings['defined-credential-fields']
-    ).map((pageUrl, index) => ({ id: index, pageUrl }));
-  }
 
-  componentWillMount() {
-    const pluginVersion = getPluginVersion();
-    this.setState({ pluginVersion });
-    getKeepassXCVersions().then(appVersions => this.setState({ appVersions }));
+    Promise.all([
+      getSettings(),
+      getCredentialFields(),
+      getAssociatedDatabases(),
+    ])
+    .then(([settings, credentialFields, associatedDatabases]) => {
+      this.setState({
+        settings,
+        credentialFields,
+        associatedDatabases
+      });
+    });
+
+    this.port = browser.runtime.connect({ name: 'options' });
   }
 
   handleTabChange = value => {
@@ -121,50 +103,51 @@ class App extends Component {
     });
   };
 
-  handleSettingChange = (name, value) => {
-    this.settings = {
-      ...this.settings,
+  handleSettingsChange = (name, value) => {
+    const settings = {
+      ...this.state.settings,
       [name]: value
     };
-    store.setSettings(this.settings);
-    loadSettings();
-    this.forceUpdate();
+    this.port.postMessage({ type: T.SET_SETTINGS, payload: settings });
+    this.setState({ settings });
   };
 
   handleConnect = () => {
-    associate();
+    this.port.postMessage({ type: T.ASSOCIATE });
   };
 
   handleDatabaseDelete = keepDatabases => {
-    this.databases = keepDatabases;
-    const keyRing = keepDatabases.reduce((memo, db) => {
+    const associatedDatabases = keepDatabases.reduce((memo, db) => {
       memo[db.hash] = db;
       return memo;
     }, {});
-    store.setKeyRing(keyRing);
-    this.forceUpdate();
+    this.port.postMessage({
+      type: T.SET_ASSOCIATED_DATABASES,
+      payload: associatedDatabases
+    });
+    this.setState({ associatedDatabases: keepDatabases });
   };
 
   handleCredentialsDelete = keepCredentials => {
-    this.credentials = keepCredentials;
-    const currentCredentials = this.settings['defined-credential-fields'];
+    const currentCredentialFields = this.state.credentialFields;
     const pageUrls = keepCredentials.map(cred => cred.pageUrl);
-    const newCredentials = pick(currentCredentials, pageUrls);
-    const newSettings = {
-      ...this.settings,
-      'defined-credential-fields': newCredentials
-    };
-    store.setSettings(newSettings);
-    loadSettings();
-    this.forceUpdate();
-  }
+    const newCredentialFields = pick(currentCredentialFields, pageUrls);
+    this.port.postMessage({
+      type: T.SET_CREDENTIAL_FIELDS,
+      payload: newCredentialFields
+    });
+    this.setState({ credentialFields: keepCredentials });
+  };
 
   render() {
-    const { slideIndex, showSnack, pluginVersion, appVersions } = this.state;
+    const {
+      slideIndex,
+      showSnack,
+      settings,
+      associatedDatabases,
+      credentialFields
+    } = this.state;
     const { formatMessage } = this.props.intl;
-    const settings = this.settings;
-    const databases = this.databases;
-    const credentials = this.credentials;
 
     return (
       <div>
@@ -204,21 +187,24 @@ class App extends Component {
             <Settings
               {...settings}
               defaults={defaultSettings}
-              onSettingChange={this.handleSettingChange}
+              onSettingChange={this.handleSettingsChange}
             />
           </div>
           <div style={styles.page}>
             <Databases
-              databases={databases}
+              databases={associatedDatabases}
               onDelete={this.handleDatabaseDelete}
               onConnect={this.handleConnect}
             />
           </div>
           <div style={styles.page}>
-            <Credentials credentials={credentials} onDelete={this.handleCredentialsDelete} />
+            <Credentials
+              credentials={credentialFields}
+              onDelete={this.handleCredentialsDelete}
+            />
           </div>
           <div style={styles.page}>
-            <About pluginVersion={pluginVersion} appVersions={appVersions} />
+            <About />
           </div>
         </SwipeableViews>
         <Snackbar

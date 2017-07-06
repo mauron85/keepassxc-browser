@@ -1,57 +1,59 @@
-/* globals window */
+/* globals fetch */
+import browser from '../../common/browser';
+import * as storage from '../../common/store';
+import * as T from '../../common/actionTypes';
 
-const browser = window.msBrowser || window.browser || window.chrome;
-
-export function loadSettings() {
-  browser.runtime.sendMessage({
-    action: 'load_settings'
-  });
-}
+const KEEPASSXC_CHANGELOG_URL =
+  'https://raw.githubusercontent.com/keepassxreboot/keepassxc/develop/CHANGELOG';
 
 export function getPluginVersion() {
   return browser.runtime.getManifest().version;
 }
 
-export function getKeepassXCVersions() {
-  return new Promise((resolve, reject) => {
+export function getSettings() {
+  return storage.getSettings();
+}
+
+export function getAssociatedDatabases() {
+  return Object.entries(storage.getAssociatedDatabases()).map(([key, value]) => ({
+    hash: key,
+    ...value
+  }));
+}
+
+export function getCredentialFields() {
+  return Object.entries(storage.getCredentialFields()).map(([key, value]) => ({
+    id: key,
+    ...value
+  }));
+}
+
+export function getKeepassXCVersion() {
+  return new Promise(resolve => {
     browser.runtime.sendMessage(
       {
-        action: 'get_keepassxc_versions'
+        action: T.GET_KEEPASSXC_VERSION
       },
       (response = {}) => {
-        const { current = 'N/A', latest = 'N/A' } = response;
-        resolve({ current, latest });
+        const { version = 'N/A' } = response;
+        resolve(version);
       }
     );
-  });
+  }).catch(() => 'N/A');
 }
 
-export function checkForKeepassXCUpdates() {
-  return new Promise((resolve, reject) => {
-    browser.runtime.sendMessage(
-      {
-        action: 'check_update_keepassxc'
-      },
-      (response = {}) => {
-        const { current = 'N/A', latest = 'N/A' } = response;
-        resolve({ current, latest });
+export function getLatestKeePassXCVersion() {
+  return fetch(KEEPASSXC_CHANGELOG_URL)
+    .then(response => {
+      if (!response.ok) {
+        return 'N/A';
       }
-    );
-  });
-}
-
-export function loadKeyRing() {
-  browser.runtime.sendMessage({
-    action: 'load_keyring'
-  });
-}
-
-export function associate() {
-  browser.runtime.sendMessage({
-    action: 'associate'
-  });
-}
-
-export function getManifest() {
-  return browser.runtime.getManifest();
+      return response.text();
+    })
+    .then(text => {
+      const regexp = /^(\d+\.)?(\d+\.)?(\*|\d+)/;
+      const groups = regexp.exec(text);
+      return (groups && groups[0]) || 'N/A';
+    })
+    .catch(() => 'N/A');
 }

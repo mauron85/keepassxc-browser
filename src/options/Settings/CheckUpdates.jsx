@@ -11,7 +11,7 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import FlatButton from 'material-ui/FlatButton';
 import ToggeableListItem from './components/ToggeableListItem';
-import { getKeepassXCVersions, checkForKeepassXCUpdates } from '../actions';
+import { getKeepassXCVersion, getLatestKeePassXCVersion } from '../actions';
 
 const messages = defineMessages({
   checkUpdates: {
@@ -76,6 +76,7 @@ const styles = {
   }
 };
 
+
 class CheckUpdates extends Component {
   static propTypes = {
     intl: intlShape.isRequired,
@@ -86,10 +87,8 @@ class CheckUpdates extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      appVersions: {
-        current: 'N/A',
-        latest: 'N/A'
-      }
+      currentVersion: 'N/A',
+      latestVersion: 'N/A'
     };
   }
 
@@ -105,15 +104,19 @@ class CheckUpdates extends Component {
   };
 
   handleCheckForUpdates = () => {
-    checkForKeepassXCUpdates().then((appVersions) => {
-      this.setState({ appVersions });
+    Promise.all([
+      getKeepassXCVersion(),
+      getLatestKeePassXCVersion()
+    ])
+    .then(([currentVersion, latestVersion]) => {
+      this.setState({ currentVersion, latestVersion });
     });
   };
 
   render() {
     const { formatMessage } = this.props.intl;
     const { checkUpdateKeePassXC } = this.props;
-    const { current, latest } = this.state.appVersions;
+    const { currentVersion, latestVersion } = this.state;
 
     return (
       <List>
@@ -151,7 +154,7 @@ class CheckUpdates extends Component {
                 <FormattedMessage
                   {...messages.installedKeePassXCVersion}
                   values={{
-                    version: current
+                    version: currentVersion
                   }}
                 />
               </li>
@@ -159,7 +162,7 @@ class CheckUpdates extends Component {
                 <FormattedMessage
                   {...messages.latestKeePassXCVersion}
                   values={{
-                    version: latest
+                    version: latestVersion
                   }}
                 />
               </li>

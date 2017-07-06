@@ -1,7 +1,8 @@
 /* globals localStorage */
 
 const SETTINGS_KEY = 'settings';
-const KEYRING_KEY = 'keyRing';
+const ASSOCIATED_DATABASES_KEY = 'associatedDbs';
+const CREDENTIAL_FIELDS_KEY = 'credentialFields';
 
 /**
  * @typedef {Object} Settings
@@ -59,15 +60,34 @@ export function setSettings(settings) {
 }
 
 /** @return {AssociatedDatabases} - associated databases */
-export function getKeyRing() {
-  const keyRing = localStorage.getItem(KEYRING_KEY);
-  if (keyRing) {
-    return JSON.parse(KEYRING_KEY);
+export function getAssociatedDatabases() {
+  const databases = localStorage.getItem(ASSOCIATED_DATABASES_KEY);
+  if (databases) {
+    return JSON.parse(databases);
   }
   return {};
 }
 
-/** @param {AssociatedDatabases} keyRing associated databases */
-export function setKeyRing(keyRing) {
-  localStorage.setItem(KEYRING_KEY, JSON.stringify(keyRing));
+/** @param {AssociatedDatabases} databases - associated databases */
+export function setAssociatedDatabases(databases) {
+  localStorage.setItem(ASSOCIATED_DATABASES_KEY, JSON.stringify(databases));
+}
+
+/**
+ * @param {String} id
+ * @param {String} key
+ */
+export function addAssociatedDatabase(id, key, hash, createdAt = new Date()) {
+  const databases = getAssociatedDatabases();
+  databases[hash] = { id, key, createdAt };
+  setAssociatedDatabases(databases);
+}
+
+
+export function getCredentialFields() {
+  const credentialFieldsString = localStorage.getItem(CREDENTIAL_FIELDS_KEY);
+  if (credentialFieldsString) {
+    return JSON.parse(credentialFieldsString);
+  }
+  return {};
 }

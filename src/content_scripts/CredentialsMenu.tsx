@@ -31,13 +31,13 @@ const CredentialsMenu = ({ top, left, width, credentials, onSelect }) => {
       <div className="card card-2 card--credentials">
         {Array.isArray(credentials) && credentials.length > 0
           ? <ul className="keepassxc-credentials-menu">
-              {credentials.map(({ id, username, password }) =>
+              {credentials.map(({ uuid, login, password }, index) =>
                 <li
-                  key={id}
+                  key={uuid}
                   className="keepassxc-credentials-menu__item"
-                  onclick={() => onSelect(id)}
+                  onclick={() => onSelect(index)}
                 >
-                  {username}
+                  {login}
                 </li>
               )}
             </ul>

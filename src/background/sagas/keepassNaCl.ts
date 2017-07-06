@@ -15,6 +15,7 @@ import {
   isNonceValid
 } from '../keepass';
 import * as T from '../../common/actionTypes';
+import * as storage from '../../common/store';
 
 const NATIVE_HOST_NAME = 'com.varjolintu.keepassxc_browser';
 
@@ -22,49 +23,71 @@ const actions = {
   GET_LOGINS: 'get-logins',
   GET_DATABASE_HASH: 'get-databasehash',
   CHANGE_PUBLIC_KEYS: 'change-public-keys',
+  ASSOCIATE: 'associate',
   TEST_ASSOCIATE: 'test-associate'
 };
 
 let port;
 
+function* getDecryptedMessage(payload) {
+  const state = yield select();
+  const { secretKey, serverPublicKey } = state.keys;
+
+  const responseMessageUint8Array = decrypt(
+    payload.message,
+    payload.nonce,
+    serverPublicKey,
+    secretKey
+  );
+
+  if (!responseMessageUint8Array) {
+    throw new Error('Failed to decrypt message');
+  }
+
+  return JSON.parse(encodeUTF8(responseMessageUint8Array));
+}
+
 function* changePublicKeys() {
+  yield put({ type: T.INVALIDATE_KEYS });
   const { publicKey, secretKey } = getNewKeyPair();
-  yield put({ type: T.NEW_KEY_PAIR, payload: { publicKey, secretKey } });
-  const nonce = encodeBase64(getRandomNonce());
+  const nonceBase64 = encodeBase64(getRandomNonce());
   port.postMessage({
     action: actions.CHANGE_PUBLIC_KEYS,
     publicKey: encodeBase64(publicKey),
-    nonce
+    nonce: nonceBase64
   });
 
-  const response = yield take(actions.CHANGE_PUBLIC_KEYS);
+  const { payload } = yield take(actions.CHANGE_PUBLIC_KEYS);
   const {
     version,
     success,
     nonce: responseNonce,
     publicKey: publicKeyBase64
-  } = response.payload;  
+  } = payload;  
 
   if (!success || !publicKeyBase64) {
-    yield put({ type: T.KEY_EXCHANGE_FAILED });
     throw new Error('Public key exchange failed');
   }
-
-  if (!isNonceValid(decodeBase64(responseNonce))) {
-    yield put({ type: T.KEY_EXCHANGE_FAILED });
-    throw new Error('Public key exchange failed because of invalid nonce');
-  }
-  
-  if (responseNonce !== nonce ) {
-    yield put({ type: T.KEY_EXCHANGE_FAILED });
+ 
+  if (responseNonce !== nonceBase64 ) {
     throw new Error('Public key exchange failed because nonce differ');   
   }
 
-  // const nonce = decodeBase64(nonceBase64);
   const serverPublicKey = decodeBase64(publicKeyBase64);
-  yield put({ type: T.NEW_SERVER_PUBLIC_KEY, payload: serverPublicKey });
+  yield put({ type: T.SET_NEW_KEYS, payload: { secretKey, publicKey, serverPublicKey } });
 
-  return serverPublicKey;
+  return { secretKey, publicKey, serverPublicKey };
+}
+
+function* getKeys() {
+  const state = yield select();
+  let { secretKey, publicKey, serverPublicKey } = state.keys;
+
+  if (!(secretKey && publicKey && serverPublicKey)) {
+    return yield call(changePublicKeys);
+  }
+
+  return { secretKey, publicKey, serverPublicKey };
 }
 
 export function* getDatabaseHash() {
@@ -75,7 +98,6 @@ export function* getDatabaseHash() {
     const error = new Error(
       `Error getting database hash. Message: ${errorMessage} Code: ${errorCode}`
     );
-    // error.code = errorCode;
     yield put({ type: T.GET_DATABASE_HASH_FAILURE, payload: error });
     throw error;
   }
@@ -83,69 +105,104 @@ export function* getDatabaseHash() {
 }
 
 export function* testAssociation(dbHash) {
-  const state = yield select();
-  const { associatedDatabases, secretKey, serverPublicKey } = state;
+  const { secretKey, serverPublicKey } = yield call(getKeys);
+  const associatedDatabases = storage.getAssociatedDatabases();
   const { id = null, key = null } = associatedDatabases[dbHash] || {};
   if (!(id && key)) {
     const error = new Error('Not associated with opened db');
-    // error.code = errorCode;
     yield put({ type: 'NOT_ASSOCIATED_ERROR', payload: error });
-    // throw error;
     return false;
   }
-  const requestMessage = {
+
+  const nonce = getRandomNonce();
+  const nonceBase64 = encodeBase64(nonce);
+   const requestMessage = {
     action: actions.TEST_ASSOCIATE,
     id: id,
     key: key
   };
-  const nonce = getRandomNonce();
-  const request = {
-    action: actions.TEST_ASSOCIATE,
-    message: encrypt(requestMessage, nonce, serverPublicKey, secretKey),
-    nonce: encodeBase64(nonce)
-  };
 
   port.postMessage({
     action: actions.TEST_ASSOCIATE,
-    message: request
+    message: encrypt(requestMessage, nonce, serverPublicKey, secretKey),
+    nonce: nonceBase64
   });
 
   // wait for response;
   const { payload } = yield take(actions.TEST_ASSOCIATE);
-  let responseMessageUint8Array = decrypt(
-    payload.message,
-    payload.nonce,
-    serverPublicKey,
-    secretKey
-  );
-  if (!responseMessageUint8Array) {
-    const error = 'Failed to decrypt message';
-    yield put({ type: 'DECRYPT_ERROR', payload: error });
-    // throw error;
-    return false;
-  }
-  const responseMessage = JSON.parse(encodeUTF8(responseMessageUint8Array));
+  const responseMessage = yield call(getDecryptedMessage, payload);
   return (
     responseMessage.success == 'true' &&
-    isNonceValid(decodeBase64(payload.nonce)) &&
+    responseMessage.nonce === nonceBase64 &&
     responseMessage.id === id
   );
 }
 
-export function* getCredentials() {
-  try {
-    const { serverPublicKey } = yield select();
-    if (!serverPublicKey) {
-      yield call(changePublicKeys);
-    }
-    const dbHash: string = yield call(getDatabaseHash);
-    const isAssociated = yield call(testAssociation, dbHash);
-    if (!isAssociated) {
-      throw new Error('Not associated with opened db');
-    }
-  } catch (error) {
-    throw error;
+export function* associate() {
+  const { publicKey, secretKey, serverPublicKey } = yield call(getKeys);
+
+  const nonce = getRandomNonce();
+  const nonceBase64 = encodeBase64(nonce);
+  const key = encodeBase64(publicKey);
+  const requestMessage = { action: actions.ASSOCIATE, key };
+
+  port.postMessage({
+    action: actions.ASSOCIATE,
+    message: encrypt(requestMessage, nonce, serverPublicKey, secretKey),
+    nonce: nonceBase64
+  });
+
+  const { payload } = yield take(actions.ASSOCIATE);
+  const responseMessage = yield call(getDecryptedMessage, payload);
+
+  if (!(
+    responseMessage.success == 'true' &&
+    responseMessage.nonce === nonceBase64
+  )) {
+    throw new Error('KeePassXC association failed');
   }
+
+  return {
+    key: key,
+    id: responseMessage.id,
+    hash: responseMessage.hash
+  };
+}
+
+export function* getCredentials({ origin, formUrl }) {
+  const { serverPublicKey, secretKey } = yield call(getKeys);
+  const dbHash: string = yield call(getDatabaseHash);
+  const isAssociated = yield call(testAssociation, dbHash);
+  if (!isAssociated) {
+    throw new Error('Not associated with opened db');
+  }
+
+  const nonce = getRandomNonce();
+  const nonceBase64 = encodeBase64(nonce);
+
+  const requestMessage = {
+    id: dbHash,
+    url: origin,
+    submiturl: formUrl
+  };  
+
+  port.postMessage({
+    action: actions.GET_LOGINS,
+    message: encrypt(requestMessage, nonce, serverPublicKey, secretKey),
+    nonce: encodeBase64(nonce)
+  });
+
+  const { payload } = yield take(actions.GET_LOGINS);
+  const responseMessage = yield call(getDecryptedMessage, payload);
+
+  if (!(
+    responseMessage.success == 'true' &&
+    responseMessage.nonce === nonceBase64
+  )) {
+    throw new Error('KeePassXC getting credentials failed');
+  }
+
+  return responseMessage.entries;
 }
 
 export default function* keepassNativeClientSaga() {

@@ -2,7 +2,7 @@ import { take, put, call, apply, race } from 'redux-saga/effects';
 import { delay } from 'redux-saga'
 import createChannel from './channels/message';
 import browser from '../../common/browser';
-import { getDatabaseHash, getCredentials } from './keepassNaCl';
+import { getDatabaseHash, getCredentials, associate } from './keepassNaCl';
 import * as storage from '../../common/store';
 import * as T from '../../common/actionTypes';
 
@@ -15,7 +15,10 @@ function* handleCredentials(action, port) {
     if (timeout) {
       throw new Error('Request timed out');
     }
-    return credentials;
+    port.postMessage({
+      action: T.GET_CREDENTIALS_SUCCESS,
+      payload: credentials
+    });
   } catch (error) {
     port.postMessage({
       action: T.GET_CREDENTIALS_FAILURE,
@@ -44,18 +47,27 @@ function* handleDbHash(port) {
   }
 }
 
-function* handleGetPluginVersion(port) {
-  const version = browser.runtime.getManifest().version;
-  port.postMessage({ type: T.GET_PLUGIN_VERSION_SUCCESS, payload: version });
-}
-
-function* handleGetSettings(port) {
-  const settings = storage.getSettings();
-  port.postMessage({ type: T.GET_SETTINGS_SUCCESS, payload: settings });
-}
-
 function* handleSetSettings(action) {
   storage.setSettings(Object.assign({}, storage.defaultSettings, action.payload));
+}
+
+function* handleSetAssociatedDatabases(action) {
+  storage.setAssociatedDatabases(action.payload);
+}
+
+function* handleAssociate(port) {
+  try {
+    const { id, key, hash } = yield call(associate);
+    storage.addAssociatedDatabase(id, key, hash);
+  } catch(error) {
+    port.postMessage({
+      action: T.ASSOCIATE_FAILURE,
+      payload: {
+        code: error.code,
+        message: error.message
+      }
+    });
+  }
 }
 
 export default function* tabSaga(port) {
@@ -74,14 +86,14 @@ export default function* tabSaga(port) {
         case T.GET_DATABASE_HASH:
           yield call(handleDbHash, port);
           break;
-        case T.GET_PLUGIN_VERSION:
-          yield call(handleGetPluginVersion, port);
-          break;
-        case T.GET_SETTINGS:
-          yield call(handleGetSettings, port);
-          break;
         case T.SET_SETTINGS:
           yield call(handleSetSettings, action);
+          break;
+        case T.SET_ASSOCIATED_DATABASES:
+          yield call(handleSetAssociatedDatabases, action);
+          break;
+        case T.ASSOCIATE:
+          yield call(handleAssociate, port);
           break;
         default:
           yield put(action); // just forward unrecognized message, might be handled somewhere else

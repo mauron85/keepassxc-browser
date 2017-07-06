@@ -71,10 +71,7 @@ browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 });
 
 const preloadedState = {
-  publicKey: null,
-  secretKey: null,
-  serverPublicKey: null,
-  associatedDatabases: storage.getKeyRing()
+  associatedDatabases: storage.getAssociatedDatabases() // sets reducer initial state
 };
 
 const sagaMiddleware = createSagaMiddleware()

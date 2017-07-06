@@ -4,7 +4,7 @@ import CredentialsMenu from './CredentialsMenu';
 import { getFormFields } from './forms';
 import browser from '../common/browser';
 import * as T from '../common/actionTypes';
-import { getOptions } from './actions';
+import { getSettings } from './actions';
 
 const state = {
   UNKNOWN: -2,
@@ -13,7 +13,7 @@ const state = {
   SHOW_CREDENTIALS_MENU: 1
 };
 
-function calcMenuPositionRelativeToElement(el) {
+function getMenuPositionRelativeToElement(el) {
   const { scrollX, scrollY } = window;
   const { top, right, bottom, left, width } = el.getBoundingClientRect();
 
@@ -26,16 +26,17 @@ function calcMenuPositionRelativeToElement(el) {
 
 let run = () => {
   let port;
-  const defaultState = { appState: state.INITIAL };
+  const defaultState = { appState: state.INITIAL, credentials: [], element: null };
   const el = document.body.appendChild(document.createElement('div'));
   el.className = 'keepassxc';
 
   app({
     state: defaultState,
     view: (state, actions) => {
-      const { appState, menuPosition, credentials } = state;
+      const { appState, inputElement, credentials } = state;
       switch (appState) {
         case state.SHOW_CREDENTIALS_MENU:
+          const menuPosition = getMenuPositionRelativeToElement(inputElement);
           return (
             <CredentialsMenu
               {...menuPosition}
@@ -51,8 +52,17 @@ let run = () => {
       setState: (currentState, __, newState) => {
         return Object.assign({}, currentState, newState);
       },
-      onCredentialSelect: (state, actions, credentialId) => {
-        console.log('Selected credentials', credentialId);
+      onCredentialSelect: (state, actions, credentialIndex) => {
+        const { inputElement, credentials } = state;
+        const { login, password } = credentials[credentialIndex];
+        inputElement.value = login;
+        const form = inputElement.closest('form');
+        if (form) {
+          const passwordElement = form.querySelector('input[type="password"]');
+          if (passwordElement) {
+            passwordElement.value = password;
+          }
+        }
 
         actions.setState(defaultState);
       }
@@ -93,16 +103,15 @@ let run = () => {
             payload: { origin, formAction }
           });
 
-          el.addEventListener(
-            'blur',
-            () => setTimeout(() => actions.setState(defaultState), 250),
-            { once: true }
-          );
+          // el.addEventListener(
+          //   'blur',
+          //   () => setTimeout(() => actions.setState(defaultState), 250),
+          //   { once: true }
+          // );
 
-          const menuPosition = calcMenuPositionRelativeToElement(el);
           actions.setState({
             appState: state.SHOW_CREDENTIALS_MENU,
-            menuPosition
+            inputElement: el,
           });
         });
 

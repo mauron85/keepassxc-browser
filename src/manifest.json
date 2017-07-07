@@ -25,14 +25,6 @@
 	"background": {
 		"scripts": [
 			"background/index.js"
-			// "background/nacl.min.js",
-			// "background/nacl-util.min.js",
-			// "background/keepass.js",
-			// "background/httpauth.js",
-			// "background/browserAction.js",
-			// "background/page.js",
-			// "background/event.js",
-			// "background/init.js"
 		],
 		"persistent": true
 	},
@@ -70,8 +62,6 @@
 		"clipboardWrite",
 		"nativeMessaging",
 		"tabs",
-		// "webRequest",
-		// "webRequestBlocking",
 		"https://raw.github.com/"
 	],
 	"applications": {

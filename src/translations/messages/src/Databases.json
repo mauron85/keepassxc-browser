@@ -1,0 +1,36 @@
+[
+  {
+    "id": "databases.title",
+    "defaultMessage": "Connected Databases"
+  },
+  {
+    "id": "databases.subtitle",
+    "defaultMessage": "The following KeePassXC databases are connected to keepassxc-browser"
+  },
+  {
+    "id": "databases.norecords",
+    "description": "Shown when user has no connected databases",
+    "defaultMessage": "No connected databases just yet"
+  },
+  {
+    "id": "databases.selected",
+    "defaultMessage": "{count, plural, one {# item} other {# items}} selected"
+  },
+  {
+    "id": "databases.removeConfirmation",
+    "description": "Shown when user click on delete button",
+    "defaultMessage": "{count, plural, one {Database} other {Databases}} will be removed"
+  },
+  {
+    "id": "databases.removeNotice",
+    "defaultMessage": "You'll be not able to access credentials from {count, plural, one {this DB} other {these DBs}}, without connecting {count, plural, one {it} other {them}} again."
+  },
+  {
+    "id": "databases.cancelBtnLabel",
+    "defaultMessage": "Cancel"
+  },
+  {
+    "id": "databases.removeBtnLabel",
+    "defaultMessage": "Remove"
+  }
+]

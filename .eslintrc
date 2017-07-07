@@ -1,0 +1,15 @@
+{
+  "extends": "airbnb",
+
+  "ecmaFeatures": {
+    "classes": true,
+    "jsx": true
+  },
+  "rules": {
+    "comma-dangle": 0,
+    "react/jsx-filename-extension": [1, {
+      "extensions": [".js", ".jsx"]
+    }]
+  },
+  "parser": "babel-eslint"
+}

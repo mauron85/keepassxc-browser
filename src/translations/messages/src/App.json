@@ -1,0 +1,32 @@
+[
+  {
+    "id": "app.title",
+    "description": "Title shown in AppBar",
+    "defaultMessage": "keepassxc browser"
+  },
+  {
+    "id": "app.tabs.settings",
+    "description": "Settings tab label",
+    "defaultMessage": "Settings"
+  },
+  {
+    "id": "app.tabs.databases",
+    "description": "Connected Databases tab label",
+    "defaultMessage": "Databases"
+  },
+  {
+    "id": "app.tabs.credentials",
+    "description": "Specified credential fields tab label",
+    "defaultMessage": "Credentials"
+  },
+  {
+    "id": "app.tabs.about",
+    "description": "About extension tab label",
+    "defaultMessage": "About"
+  },
+  {
+    "id": "app.changesApplied",
+    "description": "Show Snackbar after changes has been applied",
+    "defaultMessage": "Settings has been applied"
+  }
+]

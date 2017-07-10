@@ -2,11 +2,13 @@
 import { createStore, applyMiddleware } from 'redux'
 import createSagaMiddleware from 'redux-saga'
 import { contextMenu } from './contextMenu';
-import browser from '../common/browser';
+import getBrowser from '../common/browser';
 import * as storage from '../common/store';
 import rootReducer from './reducers';
 import rootSaga from './sagas';
 import * as T from '../common/actionTypes';
+
+const browser = getBrowser();
 
 /** 
  * Create contextMenu from template

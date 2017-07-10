@@ -1,5 +1,5 @@
 import { take, put, call, apply, select } from 'redux-saga/effects';
-import browser from '../../common/browser';
+import getBrowser from '../../common/browser';
 import createChannel from './channels/message';
 
 let port;
@@ -13,7 +13,7 @@ export function* postMessage(message) {
 }
 
 export default function* nativeClientSaga() {
-  port = browser.runtime.connectNative(NATIVE_HOST_NAME);
+  port = getBrowser().runtime.connectNative(NATIVE_HOST_NAME);
   const channel = yield call(createChannel, port);
   try {
     while (true) {

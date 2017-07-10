@@ -2,9 +2,11 @@
 import { h, app } from 'hyperapp';
 import CredentialsMenu from './CredentialsMenu';
 import { getFormFields } from './forms';
-import browser from '../common/browser';
+import getBrowser from '../common/browser';
 import * as T from '../common/actionTypes';
 import { getSettings } from './actions';
+
+const browser = getBrowser();
 
 const states = {
   UNKNOWN: -2,

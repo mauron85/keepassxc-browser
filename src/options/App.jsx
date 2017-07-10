@@ -12,7 +12,7 @@ import Databases from './Databases';
 import Credentials from './Credentials';
 import About from './About';
 import { AboutIcon, CogIcon, DatabaseIcon, KeyIcon, Logo } from './icons';
-import browser from '../common/browser';
+import getBrowser from '../common/browser';
 import * as T from '../common/actionTypes';
 import { defaultSettings } from '../common/store';
 import {
@@ -124,7 +124,7 @@ class App extends Component {
 
     const { formatMessage } = this.props.intl;
 
-    this.port = browser.runtime.connect({ name: 'options' });
+    this.port = getBrowser().runtime.connect({ name: 'options' });
     this.port.onMessage.addListener(msg => {
       switch (msg.type) {
         case T.ASSOCIATE_SUCCESS:

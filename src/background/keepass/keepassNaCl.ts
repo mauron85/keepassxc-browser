@@ -12,10 +12,12 @@ import {
   decrypt,
   isNonceValid
 } from './helpers';
-import browser from '../../common/browser';
+import getBrowser from '../../common/browser';
 import * as T from '../../common/actionTypes';
 import * as storage from '../../common/store';
 import { postMessage } from '../sagas/nativeClient';
+
+const browser = getBrowser();
 
 const actions = {
   GET_LOGINS: 'get-logins',

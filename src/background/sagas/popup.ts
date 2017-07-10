@@ -1,12 +1,12 @@
 import { take, put, call, apply } from 'redux-saga/effects';
-import browser from '../../common/browser';
+import getBrowser from '../../common/browser';
 import * as T from '../../common/actionTypes';
 
 const ICON_BASE_PATH = '/icons/19x19/';
 const DB_NOT_AVAILABLE = 'icon_bang_19x19.png';
 
 function* setIcon(icon) {
-  browser.browserAction.setIcon({
+  getBrowser().browserAction.setIcon({
     path: `${ICON_BASE_PATH}/${icon}`
   });  
 }

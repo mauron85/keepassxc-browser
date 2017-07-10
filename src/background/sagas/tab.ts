@@ -1,11 +1,12 @@
 import { take, put, call, apply, race } from 'redux-saga/effects';
 import { delay } from 'redux-saga'
 import createChannel from './channels/message';
-import browser from '../../common/browser';
+import getBrowser from '../../common/browser';
 import * as storage from '../../common/store';
 import getKeepassInstance, { NATIVE_CLIENT, HTTP_CLIENT } from '../keepass/factory';
 import * as T from '../../common/actionTypes';
 
+const browser = getBrowser();
 let keepass = getKeepassInstance(HTTP_CLIENT);
 
 function errorToJSON(error) {

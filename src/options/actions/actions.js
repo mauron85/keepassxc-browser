@@ -1,10 +1,12 @@
 /* globals fetch */
-import browser from '../../common/browser';
+import getBrowser from '../../common/browser';
 import * as storage from '../../common/store';
 import * as T from '../../common/actionTypes';
 
 const KEEPASSXC_CHANGELOG_URL =
   'https://raw.githubusercontent.com/keepassxreboot/keepassxc/develop/CHANGELOG';
+
+const browser = getBrowser();
 
 export function getPluginVersion() {
   return browser.runtime.getManifest().version;

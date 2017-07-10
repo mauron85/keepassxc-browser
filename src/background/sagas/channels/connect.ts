@@ -1,5 +1,5 @@
 import { eventChannel, END } from 'redux-saga';
-import browser from '../../../common/browser';
+import getBrowser from '../../../common/browser';
 
 export const ON_CONNECT = 'ON_CONNECT';
 
@@ -9,6 +9,7 @@ export default function createChannel() {
       emit({ type: ON_CONNECT, port });
     };
 
+    const browser = getBrowser();
     browser.runtime.onConnect.addListener(listener);
 
     // the subscriber must return an unsubscribe function

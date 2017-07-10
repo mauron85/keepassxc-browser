@@ -14,7 +14,7 @@
     "build:preview": "npm run clean:preview && npm run copy:preview && webpack --progress --config webpack.config.preview.js",
     "build:background": "webpack --progress --config webpack.config.background.js",
     "build:contentScripts": "webpack --progress --config webpack.config.contentScripts.js",
-    "build:options": "webpack --progress --config webpack.config.prod.js",
+    "build:options": "webpack --progress --config webpack.config.options.js",
     "build:popup": "webpack --progress --config webpack.config.popup.js",
     "build": "npm run clean:dist && npm run copy:dist && npm run build:background && npm run build:options && npm run build:popup && npm run build:contentScripts",
     "test": "jest --config=jest.config.js"

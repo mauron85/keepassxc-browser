@@ -5,12 +5,8 @@ import {
   encodeUTF8,
   decodeUTF8
 } from 'tweetnacl-util';
-import { take, put, call, apply } from 'redux-saga/effects';
-import { eventChannel } from 'redux-saga';
-import browser from '../common/browser';
-import * as store from '../common/store';
 
-const KEY_SIZE = 24;
+const DEFAULT_KEY_SIZE = 24;
 
 export function isNonceValid(nonce) {
   return nonce.length === nacl.secretbox.nonceLength;
@@ -36,6 +32,6 @@ export function getNewKeyPair() {
   return { publicKey, secretKey };
 }
 
-export function getRandomNonce() {
-  return nacl.randomBytes(KEY_SIZE);
+export function getRandomNonce(keySize = DEFAULT_KEY_SIZE) {
+  return nacl.randomBytes(keySize);
 }

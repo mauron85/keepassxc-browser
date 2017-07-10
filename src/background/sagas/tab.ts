@@ -2,48 +2,54 @@ import { take, put, call, apply, race } from 'redux-saga/effects';
 import { delay } from 'redux-saga'
 import createChannel from './channels/message';
 import browser from '../../common/browser';
-import { getDatabaseHash, getCredentials, associate } from './keepassNaCl';
 import * as storage from '../../common/store';
+import getKeepassInstance, { NATIVE_CLIENT, HTTP_CLIENT } from '../keepass/factory';
 import * as T from '../../common/actionTypes';
 
-function* handleCredentials(action, port) {
+let keepass = getKeepassInstance(HTTP_CLIENT);
+
+function errorToJSON(error) {
+  return {
+    code: error.code,
+    message: error.message,
+    stack: error.stack
+  };
+}
+
+function* handleGetCredentials(action) {
   try {
+    const { origin, formAction } = action.payload;
     const { credentials, timeout } = yield race({
-      credentials: call(getCredentials, action.payload),
+      credentials: call([keepass, 'getCredentials'],origin, formAction),
       timeout: call(delay, 5000)
     });
     if (timeout) {
       throw new Error('Request timed out');
     }
-    port.postMessage({
-      action: T.GET_CREDENTIALS_SUCCESS,
+    return {
+      type: T.GET_CREDENTIALS_SUCCESS,
       payload: credentials
-    });
+    };
   } catch (error) {
-    port.postMessage({
-      action: T.GET_CREDENTIALS_FAILURE,
-      payload: {
-        message: error.message
-      }
-    });
+    return {
+      type: T.GET_CREDENTIALS_FAILURE,
+      payload: errorToJSON(error)
+    };
   }
 }
 
-function* handleDbHash(port) {
+function* handleGetDbHash() {
   try {
-    const hash = yield call(getDatabaseHash);
-    port.postMessage({
-      action: T.GET_DATABASE_HASH_SUCCESS,
+    const hash = yield call([keepass ,'getDatabaseHash']);
+    return {
+      type: T.GET_DATABASE_HASH_SUCCESS,
       payload: hash
-    });
+    };
   } catch (error) {
-    port.postMessage({
-      action: T.GET_DATABASE_HASH_FAILURE,
-      payload: {
-        code: error.code,
-        message: error.message
-      }
-    });
+    return {
+      type: T.GET_DATABASE_HASH_FAILURE,
+      payload: errorToJSON(error)
+    };
   }
 }
 
@@ -55,18 +61,18 @@ function* handleSetAssociatedDatabases(action) {
   storage.setAssociatedDatabases(action.payload);
 }
 
-function* handleAssociate(port) {
+function* handleAssociate() {
   try {
-    const { id, key, hash } = yield call(associate);
+    const { id, key, hash } = yield call([keepass, 'associate']);
     storage.addAssociatedDatabase(id, key, hash);
+    return {
+      type: T.ASSOCIATE_SUCCESS
+    };   
   } catch(error) {
-    port.postMessage({
-      action: T.ASSOCIATE_FAILURE,
-      payload: {
-        code: error.code,
-        message: error.message
-      }
-    });
+    return {
+      type: T.ASSOCIATE_FAILURE,
+      payload: errorToJSON(error)
+    };
   }
 }
 
@@ -78,13 +84,17 @@ export default function* tabSaga(port) {
   try {
     while (true) {
       // take(END) will cause the saga to terminate by jumping to the finally block
+      let msg;
       const action = yield take(channel);
       switch (action.type) {
         case T.GET_CREDENTIALS:
-          yield call(handleCredentials, action, port);
+          msg = yield call(handleGetCredentials, action);
           break;
         case T.GET_DATABASE_HASH:
-          yield call(handleDbHash, port);
+          msg = yield call(handleGetDbHash);
+          break;
+        case T.ASSOCIATE:
+          msg = yield call(handleAssociate);
           break;
         case T.SET_SETTINGS:
           yield call(handleSetSettings, action);
@@ -92,12 +102,11 @@ export default function* tabSaga(port) {
         case T.SET_ASSOCIATED_DATABASES:
           yield call(handleSetAssociatedDatabases, action);
           break;
-        case T.ASSOCIATE:
-          yield call(handleAssociate, port);
-          break;
         default:
-          yield put(action); // just forward unrecognized message, might be handled somewhere else
           break;
+      }
+      if (msg) {
+        port.postMessage(msg);
       }
     }
   } finally {

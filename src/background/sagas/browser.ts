@@ -14,9 +14,9 @@ export default function* browserSaga() {
         case ON_CONNECT:
           // TODO: replace fork with call, because we don't want to allow parallel messaging from multiple tabs
           yield fork(tabSaga, action.port);
-          continue;
+          break;
         default:
-          continue;
+          break;
       }
     }
   } finally {

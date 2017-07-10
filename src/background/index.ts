@@ -2,7 +2,6 @@
 import { createStore, applyMiddleware } from 'redux'
 import createSagaMiddleware from 'redux-saga'
 import { contextMenu } from './contextMenu';
-import * as keepass from './keepass';
 import browser from '../common/browser';
 import * as storage from '../common/store';
 import rootReducer from './reducers';

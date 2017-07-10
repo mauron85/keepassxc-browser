@@ -2,8 +2,10 @@ import pick from 'lodash/pick';
 import React, { Component } from 'react';
 import { intlShape, defineMessages, injectIntl } from 'react-intl';
 import AppBar from 'material-ui/AppBar';
-import Snackbar from 'material-ui/Snackbar';
 import { Tabs, Tab } from 'material-ui/Tabs';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import Snackbar from 'material-ui/Snackbar';
 import SwipeableViews from 'react-swipeable-views';
 import Settings from './Settings';
 import Databases from './Databases';
@@ -13,7 +15,11 @@ import { AboutIcon, CogIcon, DatabaseIcon, KeyIcon, Logo } from './icons';
 import browser from '../common/browser';
 import * as T from '../common/actionTypes';
 import { defaultSettings } from '../common/store';
-import { getSettings, getAssociatedDatabases, getCredentialFields } from './actions';
+import {
+  getSettings,
+  getAssociatedDatabases,
+  getCredentialFields
+} from './actions';
 
 const styles = {
   page: {
@@ -30,6 +36,16 @@ const styles = {
     paddingTop: 16,
     marginBottom: 12,
     fontWeight: 400
+  },
+  errorMessage: {
+    marginBottom: 10,
+    fontWeight: 'bold'
+  },
+  errorStack: {
+    maxHeight: 200,
+    overflowY: 'scroll',
+    wordBreak: 'break-word',
+    backgroundColor: '#eee'
   }
 };
 
@@ -59,10 +75,22 @@ const messages = defineMessages({
     description: 'About extension tab label',
     defaultMessage: 'About'
   },
-  changesApplied: {
-    id: 'app.changesApplied',
+  settingsApplied: {
+    id: 'app.settingsApplied',
     description: 'Show Snackbar after changes has been applied',
     defaultMessage: 'Settings has been applied'
+  },
+  associationSuccess: {
+    id: 'app.associationSuccess',
+    defaultMessage: 'Database successfully associated'
+  },
+  error: {
+    id: 'app.error',
+    defaultMessage: 'Error has occured'
+  },
+  closeBtnLabel: {
+    id: 'app.closeBtnLabel',
+    defaultMessage: 'Close'
   }
 });
 
@@ -74,19 +102,19 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      slideIndex: 0,
+      error: null,
       settings: null,
-      associatedDatabases: [],
+      snackMessage: null,
       credentialFields: [],
-      showSnack: false,
-      slideIndex: 0
+      associatedDatabases: []
     };
 
     Promise.all([
       getSettings(),
       getCredentialFields(),
-      getAssociatedDatabases(),
-    ])
-    .then(([settings, credentialFields, associatedDatabases]) => {
+      getAssociatedDatabases()
+    ]).then(([settings, credentialFields, associatedDatabases]) => {
       this.setState({
         settings,
         credentialFields,
@@ -94,7 +122,24 @@ class App extends Component {
       });
     });
 
+    const { formatMessage } = this.props.intl;
+
     this.port = browser.runtime.connect({ name: 'options' });
+    this.port.onMessage.addListener(msg => {
+      switch (msg.type) {
+        case T.ASSOCIATE_SUCCESS:
+          this.setState({
+            associatedDatabases: getAssociatedDatabases(),
+            snackMessage: formatMessage(messages.associationSuccess)
+          });
+          return true;
+        case T.ASSOCIATE_FAILURE:
+          this.setState({ error: msg.payload });
+          return true;
+        default:
+          return false;
+      }
+    });
   }
 
   handleTabChange = value => {
@@ -139,13 +184,22 @@ class App extends Component {
     this.setState({ credentialFields: keepCredentials });
   };
 
+  handleCloseErrorDialog = () => {
+    this.setState({ error: null });
+  };
+
+  handleRequestClose = () => {
+    this.setState({ snackMessage: null });
+  };
+
   render() {
     const {
-      slideIndex,
-      showSnack,
+      error,
       settings,
-      associatedDatabases,
-      credentialFields
+      snackMessage,
+      slideIndex,
+      credentialFields,
+      associatedDatabases
     } = this.state;
     const { formatMessage } = this.props.intl;
 
@@ -207,9 +261,29 @@ class App extends Component {
             <About />
           </div>
         </SwipeableViews>
+        <Dialog
+          modal
+          open={!!error}
+          title={formatMessage(messages.error)}
+          actions={[
+            <FlatButton
+              primary
+              label={formatMessage(messages.closeBtnLabel)}
+              onTouchTap={this.handleCloseErrorDialog}
+            />
+          ]}
+        >
+          {error &&
+            <div>
+              <div style={styles.errorMessage}>{error.message}</div>
+              <div style={styles.errorStack}>
+                {error.stack && <code>{error.stack}</code>}
+              </div>
+            </div>}
+        </Dialog>
         <Snackbar
-          open={showSnack}
-          message={formatMessage(messages.changesApplied)}
+          open={!!snackMessage}
+          message={snackMessage}
           autoHideDuration={4000}
           onRequestClose={this.handleRequestClose}
         />

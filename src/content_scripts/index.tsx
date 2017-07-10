@@ -6,7 +6,7 @@ import browser from '../common/browser';
 import * as T from '../common/actionTypes';
 import { getSettings } from './actions';
 
-const state = {
+const states = {
   UNKNOWN: -2,
   ERROR: -1,
   INITIAL: 0,
@@ -26,7 +26,7 @@ function getMenuPositionRelativeToElement(el) {
 
 let run = () => {
   let port;
-  const defaultState = { appState: state.INITIAL, credentials: [], element: null };
+  const defaultState = { appState: states.INITIAL, credentials: [], element: null };
   const el = document.body.appendChild(document.createElement('div'));
   el.className = 'keepassxc';
 
@@ -35,7 +35,7 @@ let run = () => {
     view: (state, actions) => {
       const { appState, inputElement, credentials } = state;
       switch (appState) {
-        case state.SHOW_CREDENTIALS_MENU:
+        case states.SHOW_CREDENTIALS_MENU:
           const menuPosition = getMenuPositionRelativeToElement(inputElement);
           return (
             <CredentialsMenu
@@ -73,7 +73,7 @@ let run = () => {
 
         port = browser.runtime.connect({ name: 'content_script' });
         port.onMessage.addListener(msg => {
-          switch (msg.action) {
+          switch (msg.type) {
             case T.GET_CREDENTIALS_SUCCESS:
               actions.setState({ credentials: msg.payload });
               return true;
@@ -110,7 +110,7 @@ let run = () => {
           // );
 
           actions.setState({
-            appState: state.SHOW_CREDENTIALS_MENU,
+            appState: states.SHOW_CREDENTIALS_MENU,
             inputElement: el,
           });
         });

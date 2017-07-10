@@ -1,7 +1,15 @@
 [
   {
-    "id": "about.title",
+    "id": "about.contributors",
     "defaultMessage": "Contributors"
+  },
+  {
+    "id": "about.credits",
+    "defaultMessage": "Special thanks"
+  },
+  {
+    "id": "about.license",
+    "defaultMessage": "License"
   },
   {
     "id": "about.vesions",

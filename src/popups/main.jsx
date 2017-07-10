@@ -11,15 +11,7 @@ import Associated from './Associated';
 import ShowError from './ShowError';
 import InvalidState from './InitialState';
 import { sendMessageWithTimeout, TimeoutError } from './messaging';
-
-function convert(str) {
-  str = str.replace(/&/g, '&amp;');
-  str = str.replace(/>/g, '&gt;');
-  str = str.replace(/</g, '&lt;');
-  str = str.replace(/"/g, '&quot;');
-  str = str.replace(/'/g, '&#039;');
-  return str;
-}
+import sanitizeString from '../common/sanitizeString';
 
 const state = {
   UNKNOWN: -2,
@@ -106,7 +98,7 @@ export default function render() {
           return (
             <Popup showUpdateNotice={isNewerVersion}>
               <ShowError
-                trace={convert(trace)}
+                trace={sanitizeString(trace)}
                 error={error}
                 onReconnect={actions.reconnect}
               />

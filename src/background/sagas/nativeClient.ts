@@ -1,4 +1,5 @@
-import { take, put, call, apply, select } from 'redux-saga/effects';
+import { take, put, call, apply, select, race } from 'redux-saga/effects';
+import { delay } from 'redux-saga'
 import getBrowser from '../../common/browser';
 import createChannel from './channels/message';
 
@@ -8,8 +9,17 @@ const NATIVE_HOST_NAME = 'com.varjolintu.keepassxc_browser';
 
 export function* postMessage(message) {
   port.postMessage(message);
-  const { payload }  = yield take(message.action); // wait for response
-  return payload;
+
+  const { response, timeout } = yield race({
+    response: take(message.action),
+    timeout: call(delay, 3000)
+  });
+
+  if (timeout) {
+    throw new Error('Response timeout');
+  }
+
+  return response.payload;
 }
 
 export default function* nativeClientSaga() {

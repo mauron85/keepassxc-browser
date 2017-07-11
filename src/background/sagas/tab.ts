@@ -1,5 +1,4 @@
-import { take, put, call, apply, race } from 'redux-saga/effects';
-import { delay } from 'redux-saga'
+import { take, put, call, apply } from 'redux-saga/effects';
 import createChannel from './channels/message';
 import * as storage from '../../common/store';
 import getKeepassInstance, { NATIVE_CLIENT, HTTP_CLIENT } from '../keepass/factory';
@@ -18,13 +17,7 @@ function errorToJSON(error) {
 function* handleGetCredentials(action) {
   try {
     const { origin, formAction } = action.payload;
-    const { credentials, timeout } = yield race({
-      credentials: call([keepass, 'getCredentials'],origin, formAction),
-      timeout: call(delay, 5000)
-    });
-    if (timeout) {
-      throw new Error('Request timed out');
-    }
+    const credentials = yield call([keepass, 'getCredentials'],origin, formAction);
     return {
       type: T.GET_CREDENTIALS_SUCCESS,
       payload: credentials
@@ -95,8 +88,6 @@ function* handleTestConnect() {
 }
 
 export default function* tabSaga(port) {
-  console.log(port.sender.tab);
-
   const channel = yield call(createChannel, port);
   const { clientType } = storage.getSettings();
   keepass = getKeepassInstance(clientType);

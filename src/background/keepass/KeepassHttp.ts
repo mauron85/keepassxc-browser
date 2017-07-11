@@ -98,8 +98,6 @@ function decryptEntry(e, key, iv) {
 }
 
 export default class KeepassHttp implements Keepass {
-  private url: string = DEFAULT_KEEPASSXC_URL;
-
   private getAssociation(dbHash) {
     const associatedDatabases = storage.getAssociatedDatabases();
     const assocDb = associatedDatabases[dbHash];
@@ -110,13 +108,18 @@ export default class KeepassHttp implements Keepass {
     return null;
   }
 
+  private getUrl() {
+    const { port } = storage.getSettings();
+    return `http://localhost:${port}`;
+  }
+
   async getDatabaseHash(): Promise<string> {
     const request = {
       RequestType: actions.GET_DATABASE_HASH,
       TriggerUnlock: false
     };
 
-    const response = await postRequest(this.url, request);
+    const response = await postRequest(this.getUrl(), request);
     return response.Hash;
   }
 
@@ -151,7 +154,7 @@ export default class KeepassHttp implements Keepass {
       );
     }
 
-    const response = await postRequest(this.url, request);
+    const response = await postRequest(this.getUrl(), request);
     if (!response.Success) {
       throw new Error('KeePassXC getting credentials failed');
     }
@@ -185,7 +188,7 @@ export default class KeepassHttp implements Keepass {
       Nonce: nonceBase64,
       Verifier: encrypt(convertStringToByteArray(nonceBase64), rawKey, nonce)
     };
-    const response = await postRequest(this.url, request);
+    const response = await postRequest(this.getUrl(), request);
     if (!response.Success) {
       throw new Error('KeePassXC association failed');
     }
@@ -221,7 +224,7 @@ export default class KeepassHttp implements Keepass {
       Verifier: encrypt(convertStringToByteArray(nonceBase64), key, nonce)
     };
 
-    const response = await postRequest(this.url, request);
+    const response = await postRequest(this.getUrl(), request);
     if (!response.Success) {
       return false;
     }

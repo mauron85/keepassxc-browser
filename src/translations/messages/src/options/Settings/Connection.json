@@ -1,0 +1,34 @@
+[
+  {
+    "id": "settings.connection.connection",
+    "defaultMessage": "Connection to KeePassXC"
+  },
+  {
+    "id": "settings.connection.connectionDesc",
+    "defaultMessage": "Select connection protocol and port for communication with KeePassXC app"
+  },
+  {
+    "id": "settings.connection.protocol",
+    "defaultMessage": "Connection protocol"
+  },
+  {
+    "id": "settings.connection.httpClient",
+    "defaultMessage": "HTTP"
+  },
+  {
+    "id": "settings.connection.nativeClient",
+    "defaultMessage": "Native Client"
+  },
+  {
+    "id": "settings.connection.port",
+    "defaultMessage": "Port"
+  },
+  {
+    "id": "settings.connection.checkConnection",
+    "defaultMessage": "Check connection"
+  },
+  {
+    "id": "settings.connection.connectionSuccesful",
+    "defaultMessage": "Connection succesful. Last checked at:"
+  }
+]

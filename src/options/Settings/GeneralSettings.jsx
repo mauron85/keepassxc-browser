@@ -241,7 +241,6 @@ GeneralSettings.propTypes = {
   autoFillSingleEntry: PropTypes.bool.isRequired,
   autoCompleteUsernames: PropTypes.bool.isRequired,
   autoFillAndSend: PropTypes.bool.isRequired,
-  onSettingChange: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired
 };
 

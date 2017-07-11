@@ -25,8 +25,24 @@
     "defaultMessage": "About"
   },
   {
-    "id": "app.changesApplied",
+    "id": "app.settingsApplied",
     "description": "Show Snackbar after changes has been applied",
     "defaultMessage": "Settings has been applied"
+  },
+  {
+    "id": "app.associationSuccess",
+    "defaultMessage": "Database successfully associated"
+  },
+  {
+    "id": "app.error",
+    "defaultMessage": "Error has occured"
+  },
+  {
+    "id": "app.closeBtnLabel",
+    "defaultMessage": "Close"
+  },
+  {
+    "id": "app.testConnect",
+    "defaultMessage": "Connection test"
   }
 ]

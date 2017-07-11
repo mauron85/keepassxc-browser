@@ -1,5 +1,6 @@
 import pick from 'lodash/pick';
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { intlShape, defineMessages, injectIntl } from 'react-intl';
 import AppBar from 'material-ui/AppBar';
 import { Tabs, Tab } from 'material-ui/Tabs';
@@ -91,8 +92,18 @@ const messages = defineMessages({
   closeBtnLabel: {
     id: 'app.closeBtnLabel',
     defaultMessage: 'Close'
+  },
+  testConnect: {
+    id: 'app.testConnect',
+    defaultMessage: 'Connection test'
   }
 });
+
+const state = {
+  ERROR: -1,
+  INITIAL: 1,
+  TEST_CONNECT: 2
+};
 
 class App extends Component {
   static propTypes = {
@@ -102,12 +113,15 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      appState: state.INITIAL,
       slideIndex: 0,
       error: null,
       settings: null,
       snackMessage: null,
       credentialFields: [],
-      associatedDatabases: []
+      associatedDatabases: [],
+      isCheckingConnection: false,
+      lastSuccessfulConnectionAt: -1
     };
 
     Promise.all([
@@ -123,8 +137,8 @@ class App extends Component {
     });
 
     const { formatMessage } = this.props.intl;
-
-    this.port = getBrowser().runtime.connect({ name: 'options' });
+    const browser = getBrowser();
+    this.port = browser.runtime.connect({ name: 'options' });
     this.port.onMessage.addListener(msg => {
       switch (msg.type) {
         case T.ASSOCIATE_SUCCESS:
@@ -134,7 +148,20 @@ class App extends Component {
           });
           return true;
         case T.ASSOCIATE_FAILURE:
-          this.setState({ error: msg.payload });
+          this.setState({ appState: state.ERROR, error: msg.payload });
+          return true;
+        case T.TEST_CONNECT_SUCCESS:
+          this.setState({
+            isCheckingConnection: false,
+            lastSuccessfulConnectionAt: Date.now()
+          });
+          return true;
+        case T.TEST_CONNECT_FAILURE:
+          this.setState({
+            appState: state.ERROR,
+            error: msg.payload,
+            isCheckingConnection: false
+          });
           return true;
         default:
           return false;
@@ -185,23 +212,40 @@ class App extends Component {
   };
 
   handleCloseErrorDialog = () => {
-    this.setState({ error: null });
+    this.setState({ appState: state.INITIAL, error: null });
   };
 
   handleRequestClose = () => {
     this.setState({ snackMessage: null });
   };
 
+  handleTestConnect = () => {
+    this.port.postMessage({
+      type: T.TEST_CONNECT
+    });
+    this.setState({
+      isCheckingConnection: true,
+      lastSuccessfulConnectionAt: -1
+    });
+  };
+
   render() {
     const {
+      appState,
       error,
       settings,
       snackMessage,
       slideIndex,
       credentialFields,
-      associatedDatabases
+      associatedDatabases,
+      isCheckingConnection,
+      lastSuccessfulConnectionAt
     } = this.state;
     const { formatMessage } = this.props.intl;
+
+    if (!settings) {
+      return null;
+    }
 
     return (
       <div>
@@ -240,7 +284,10 @@ class App extends Component {
           <div style={styles.page}>
             <Settings
               {...settings}
+              isCheckingConnection={isCheckingConnection}
+              lastSuccessfulConnectionAt={lastSuccessfulConnectionAt}
               defaults={defaultSettings}
+              onTestConnect={this.handleTestConnect}
               onSettingChange={this.handleSettingsChange}
             />
           </div>
@@ -263,7 +310,7 @@ class App extends Component {
         </SwipeableViews>
         <Dialog
           modal
-          open={!!error}
+          open={appState === state.ERROR}
           title={formatMessage(messages.error)}
           actions={[
             <FlatButton
@@ -283,7 +330,7 @@ class App extends Component {
         </Dialog>
         <Snackbar
           open={!!snackMessage}
-          message={snackMessage}
+          message={snackMessage || ''}
           autoHideDuration={4000}
           onRequestClose={this.handleRequestClose}
         />

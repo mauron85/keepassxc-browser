@@ -31,5 +31,9 @@
   {
     "id": "settings.general.unsafeSettingsDesc",
     "defaultMessage": "use at your own risk"
+  },
+  {
+    "id": "settings.general.connection",
+    "defaultMessage": "Connection"
   }
 ]

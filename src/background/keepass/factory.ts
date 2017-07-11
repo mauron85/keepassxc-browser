@@ -1,8 +1,8 @@
 import KeepassHttp from './KeepassHttp';
 import * as keepassNaCl from './keepassNaCl';
 
-export const NATIVE_CLIENT = 'NATIVE_CLIENT';
-export const HTTP_CLIENT = 'HTTP_CLIENT';
+export const NATIVE_CLIENT = 'nacl';
+export const HTTP_CLIENT = 'http';
 
 export default function getKeepassInstance(type: string) {
   switch (type) {

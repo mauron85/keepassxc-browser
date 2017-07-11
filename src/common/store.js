@@ -15,6 +15,8 @@ const CREDENTIAL_FIELDS_KEY = 'credentialFields';
  * @property {boolean} autoCompleteUsernames
  * @property {boolean} autoFillAndSend
  * @property {number} checkUpdateKeePassXC
+ * @property {string} clientType
+ * @property {number} port
  */
 /** @type {Settings} */
 export const defaultSettings = {
@@ -26,7 +28,9 @@ export const defaultSettings = {
   autoFillSingleEntry: false,
   autoCompleteUsernames: true,
   autoFillAndSend: true,
-  checkUpdateKeePassXC: 3
+  checkUpdateKeePassXC: 3,
+  clientType: 'http',
+  port: 19455
 };
 
 /**
@@ -56,7 +60,8 @@ export function getSettings() {
 
 /** @param {Settings} settings object */
 export function setSettings(settings) {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  const applySettings = Object.assign({}, defaultSettings, settings);
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(applySettings));
 }
 
 /** @return {AssociatedDatabases} - associated databases */

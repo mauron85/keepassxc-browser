@@ -1,13 +1,11 @@
 import { take, put, call, apply, race } from 'redux-saga/effects';
 import { delay } from 'redux-saga'
 import createChannel from './channels/message';
-import getBrowser from '../../common/browser';
 import * as storage from '../../common/store';
 import getKeepassInstance, { NATIVE_CLIENT, HTTP_CLIENT } from '../keepass/factory';
 import * as T from '../../common/actionTypes';
 
-const browser = getBrowser();
-let keepass = getKeepassInstance(HTTP_CLIENT);
+let keepass;
 
 function errorToJSON(error) {
   return {
@@ -55,7 +53,12 @@ function* handleGetDbHash() {
 }
 
 function* handleSetSettings(action) {
-  storage.setSettings(Object.assign({}, storage.defaultSettings, action.payload));
+  const newSettings = action.payload;
+  const currentSettings = storage.getSettings();
+  storage.setSettings(newSettings);
+  if (newSettings.clientType !== currentSettings.clientType) {
+    keepass = getKeepassInstance(newSettings.clientType);
+  }
 }
 
 function* handleSetAssociatedDatabases(action) {
@@ -77,10 +80,26 @@ function* handleAssociate() {
   }
 }
 
+function* handleTestConnect() {
+  try {
+    const hash = yield call([keepass ,'getDatabaseHash']);
+    return {
+      type: T.TEST_CONNECT_SUCCESS
+    };
+  } catch (error) {
+    return {
+      type: T.TEST_CONNECT_FAILURE,
+      payload: errorToJSON(error)
+    };
+  }
+}
+
 export default function* tabSaga(port) {
   console.log(port.sender.tab);
 
   const channel = yield call(createChannel, port);
+  const { clientType } = storage.getSettings();
+  keepass = getKeepassInstance(clientType);
 
   try {
     while (true) {
@@ -102,6 +121,9 @@ export default function* tabSaga(port) {
           break;
         case T.SET_ASSOCIATED_DATABASES:
           yield call(handleSetAssociatedDatabases, action);
+          break;
+        case T.TEST_CONNECT:
+          msg = yield call(handleTestConnect);
           break;
         default:
           break;

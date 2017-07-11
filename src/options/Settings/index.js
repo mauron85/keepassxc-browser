@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   FormattedMessage,
-  intlShape,
   defineMessages,
   injectIntl
 } from 'react-intl';
@@ -15,6 +14,7 @@ import Shortcuts from './Shortcuts';
 import GeneralSettings from './GeneralSettings';
 import CheckUpdates from './CheckUpdates';
 import UnsafeSettings from './UnsafeSettings';
+import Connection from './Connection';
 
 const messages = defineMessages({
   title: {
@@ -50,68 +50,77 @@ const messages = defineMessages({
   unsafeSettingsDesc: {
     id: 'settings.general.unsafeSettingsDesc',
     defaultMessage: 'use at your own risk'
+  },
+  connection: {
+    id: 'settings.general.connection',
+    defaultMessage: 'Connection'
   }
 });
 
-class Settings extends Component {
-  static propTypes = {
-    intl: intlShape.isRequired,
-    onSettingChange: PropTypes.func.isRequired
-  };
-
-  handleChange = (name, value) => {
-    this.props.onSettingChange(name, value);
-  };
-
-  render() {
-    return (
-      <div>
-        <div className="header">
-          <h2 className="title">
-            <FormattedMessage {...messages.shortcuts} />
-          </h2>
-        </div>
-        <Card>
-          <CardText>
-            <Shortcuts />
-          </CardText>
-          <CardText>
-            <FormattedMessage
-              {...messages.customizeShortcuts}
-              values={{
-                configureUrl: (
-                  <a href="chrome://extensions/configureCommands">
-                    chrome://extensions/configureCommands
-                  </a>
-                )
-              }}
-            />
-          </CardText>
-        </Card>
-        <div className="header">
-          <h2 className="title"><FormattedMessage {...messages.title} /></h2>
-        </div>
-        <Card>
-          <CardText>
-            <GeneralSettings {...this.props} onChange={this.handleChange} />
-            <Divider />
-            <CheckUpdates {...this.props} onChange={this.handleChange} />
-          </CardText>
-        </Card>
-        <div className="header">
-          <h2 className="title">
-            <FormattedMessage {...messages.unsafeSettings} />&nbsp;
-            <FormattedMessage {...messages.unsafeSettingsDesc} />
-          </h2>
-        </div>
-        <Card>
-          <CardText>
-            <UnsafeSettings {...this.props} onChange={this.handleChange} />
-          </CardText>
-        </Card>
+const Settings = ({ onSettingChange, onTestConnect, ...props }) => {
+  return (
+    <div>
+      <div className="header">
+        <h2 className="title">
+          <FormattedMessage {...messages.shortcuts} />
+        </h2>
       </div>
-    );
-  }
-}
+      <Card>
+        <CardText>
+          <Shortcuts />
+        </CardText>
+        <CardText>
+          <FormattedMessage
+            {...messages.customizeShortcuts}
+            values={{
+              configureUrl: (
+                <a href="chrome://extensions/configureCommands">
+                  chrome://extensions/configureCommands
+                </a>
+              )
+            }}
+          />
+        </CardText>
+      </Card>
+      <div className="header">
+        <h2 className="title"><FormattedMessage {...messages.title} /></h2>
+      </div>
+      <Card>
+        <CardText>
+          <GeneralSettings {...props} onChange={onSettingChange} />
+          <Divider />
+          <CheckUpdates {...props} onChange={onSettingChange} />
+        </CardText>
+      </Card>
+      <div className="header">
+        <h2 className="title">
+          <FormattedMessage {...messages.connection} />
+        </h2>
+      </div>
+      <Card>
+        <CardText>
+          <Connection {...props} onChange={onSettingChange} onTestConnect={onTestConnect} />
+        </CardText>
+      </Card>
+      <div className="header">
+        <h2 className="title">
+          <FormattedMessage {...messages.unsafeSettings} />&nbsp;
+          <FormattedMessage {...messages.unsafeSettingsDesc} />
+        </h2>
+      </div>
+      <Card>
+        <CardText>
+          <UnsafeSettings {...props} onChange={onSettingChange} />
+        </CardText>
+      </Card>
+    </div>
+  );
+};
+
+Settings.propTypes = {
+  onTestConnect: PropTypes.func.isRequired,
+  onSettingChange: PropTypes.func.isRequired
+};
+
 
 export default injectIntl(Settings);

@@ -6,7 +6,7 @@
   {
     "id": "settings.general.customizeShortcuts",
     "description": "Title shown in General Settings Card",
-    "defaultMessage": "You can customize these shortcuts on {configureUrl} page."
+    "defaultMessage": "Due browse policy you can only customize shortcuts on {configureUrl} page."
   },
   {
     "id": "settings.shortcuts",

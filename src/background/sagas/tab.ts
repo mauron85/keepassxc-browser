@@ -1,5 +1,5 @@
 import { take, put, call, apply } from 'redux-saga/effects';
-import createChannel from './channels/message';
+import createChannel from './channels/portMessage';
 import * as storage from '../../common/store';
 import getKeepassInstance, { NATIVE_CLIENT, HTTP_CLIENT } from '../keepass/factory';
 import * as T from '../../common/actionTypes';
@@ -97,9 +97,10 @@ export default function* tabSaga(port) {
       // take(END) will cause the saga to terminate by jumping to the finally block
       let msg;
       const action = yield take(channel);
+      const { autoRetrieveCredentials, autoCompleteUsernames } = storage.getSettings();
       switch (action.type) {
-        case T.GET_CREDENTIALS:
-          msg = yield call(handleGetCredentials, action);
+        case T.GET_CREDENTIALS:          
+          msg = autoRetrieveCredentials ? yield call(handleGetCredentials, action) : null;
           break;
         case T.GET_DATABASE_HASH:
           msg = yield call(handleGetDbHash);

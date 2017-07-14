@@ -8,6 +8,12 @@ const KEEPASSXC_CHANGELOG_URL =
 
 const browser = getBrowser();
 
+export function getShortcuts() {
+  return new Promise(resolve => {
+    return browser.commands.getAll(resolve);
+  });
+}
+
 export function getPluginVersion() {
   return browser.runtime.getManifest().version;
 }
@@ -30,7 +36,7 @@ export function getCredentialFields() {
   }));
 }
 
-export function getKeepassXCVersion() {
+export function getKeePassXCVersion() {
   return new Promise(resolve => {
     browser.runtime.sendMessage(
       {

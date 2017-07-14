@@ -1,36 +1,47 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   intlShape,
   defineMessages,
-  injectIntl
+  injectIntl,
+  FormattedMessage
 } from 'react-intl';
 import { List, ListItem } from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
 import Divider from 'material-ui/Divider';
+import { getShortcuts } from '../actions';
 
 const messages = defineMessages({
-  inserPassword: {
-    id: 'settings.shortcuts.inserPassword',
-    defaultMessage: 'Insert password only'
+  fill_password: {
+    id: 'settings.shortcuts.insertPassword',
+    defaultMessage: 'Insert password'
   },
-  inserPasswordDesc: {
-    id: 'settings.shortcuts.inserPasswordDesc',
-    defaultMessage: 'Insert only password into the field where your focus is'
+  fill_password_desc: {
+    id: 'settings.shortcuts.insertPasswordDesc',
+    defaultMessage: 'Insert password into the focused field'
   },
-  inserUserNamePassword: {
-    id: 'settings.shortcuts.inserUserNamePassword',
-    defaultMessage: 'Insert username and password'
+  fill_username: {
+    id: 'settings.shortcuts.insertUsername',
+    defaultMessage: 'Insert username'
   },
-  inserUserNamePasswordDesc: {
-    id: 'settings.shortcuts.inserUserNamePasswordDesc',
-    defaultMessage:
-      'Insert username and password into the fields where your focus is'
+  fill_username_desc: {
+    id: 'settings.shortcuts.insertUsernameDesc',
+    defaultMessage: 'Insert username into the focused field'
+  },
+  no_shortut: {
+    id: 'settings.shortcuts.noShortut',
+    description: 'When no shorcut is assigned display Not set',
+    defaultMessage: 'Not set'
   }
 });
 
 const styles = {
   shortcut: {
     display: 'flex'
+  },
+  noShortcut: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#ccc'
   },
   key: {
     display: 'inline-block',
@@ -50,7 +61,8 @@ const styles = {
   }
 };
 
-function makeShortcut(keys) {
+function renderShortcut(shortcut) {
+  const keys = shortcut.split('+').filter(key => key.length > 0);
   const totalKeys = keys.length;
   const buttons = keys.map((key, index) => {
     const hasNext = index < totalKeys - 1;
@@ -65,54 +77,58 @@ function makeShortcut(keys) {
   });
   return (
     <div style={{ width: 150 }}>
-      <div style={styles.shortcut}>{buttons}</div>
+      {buttons.length > 0
+        ? <div style={styles.shortcut}>{buttons}</div>
+        : <div style={styles.noShortcut}><FormattedMessage {...messages.no_shortut} /></div>}
     </div>
   );
 }
 
-const Shortcuts = ({ intl: { formatMessage } }) =>
-  <div>
-    <List>
-      <Subheader>Windows/Linux</Subheader>
-      <ListItem
-        disabled
-        primaryText={formatMessage(messages.inserPassword)}
-        secondaryText={formatMessage(messages.inserPasswordDesc)}
-        secondaryTextLines={2}
-        rightIcon={makeShortcut(['Ctrl', 'Shift', 'P'])}
-      />
-      <Divider />
-      <ListItem
-        disabled
-        primaryText={formatMessage(messages.inserUserNamePassword)}
-        secondaryText={formatMessage(messages.inserUserNamePasswordDesc)}
-        secondaryTextLines={2}
-        rightIcon={makeShortcut(['Ctrl', 'Shift', 'U'])}
-      />
-    </List>
-    <Divider />
-    <List>
-      <Subheader>Mac</Subheader>
-      <ListItem
-        disabled
-        primaryText={formatMessage(messages.inserPassword)}
-        secondaryText={formatMessage(messages.inserPasswordDesc)}
-        secondaryTextLines={2}
-        rightIcon={makeShortcut(['⌘', 'Shift', 'P'])}
-      />
-      <Divider />
-      <ListItem
-        disabled
-        primaryText={formatMessage(messages.inserUserNamePassword)}
-        secondaryText={formatMessage(messages.inserUserNamePasswordDesc)}
-        secondaryTextLines={2}
-        rightIcon={makeShortcut(['⌘', 'Shift', 'U'])}
-      />
-    </List>
-  </div>;
+class Shortcuts extends Component {
+  constructor(props, context) {
+    super(props, context);
+    this.state = { shortcuts: null };
+    getShortcuts().then(shortcuts => {
+      this.setState({ shortcuts });
+    });
+  }
+
+  render() {
+    const { formatMessage } = this.props.intl;
+    const { shortcuts } = this.state;
+    if (!shortcuts) {
+      return null;
+    }
+    //makeShortcut(['⌘', 'Shift', 'P']);
+
+    return (
+      <List>
+        <Subheader>Windows/Linux</Subheader>
+        {shortcuts
+          .filter(({ name }) => messages[name])
+          .map(({ name, shortcut }, index) => {
+            const command = messages[name];
+            const description = messages[`${name}_desc`];
+            return (
+              <div>
+                <ListItem
+                  disabled
+                  primaryText={formatMessage(command)}
+                  secondaryText={description && formatMessage(description)}
+                  secondaryTextLines={2}
+                  rightIcon={renderShortcut(shortcut)}
+                />
+                {index + 1 < shortcuts.length && <Divider />}
+              </div>
+            );
+          })}
+      </List>
+    );
+  }
+}
 
 Shortcuts.propTypes = {
-  intl: intlShape.isRequired,
+  intl: intlShape.isRequired
 };
 
 export default injectIntl(Shortcuts);

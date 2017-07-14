@@ -1,7 +1,7 @@
 import { take, put, call, apply, select, race } from 'redux-saga/effects';
 import { delay } from 'redux-saga'
 import getBrowser from '../../common/browser';
-import createChannel from './channels/message';
+import createChannel from './channels/portMessage';
 
 let port;
 

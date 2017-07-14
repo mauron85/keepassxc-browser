@@ -24,7 +24,7 @@ const messages = defineMessages({
   customizeShortcuts: {
     id: 'settings.general.customizeShortcuts',
     description: 'Title shown in General Settings Card',
-    defaultMessage: 'You can customize these shortcuts on {configureUrl} page.'
+    defaultMessage: 'Due browse policy you can only customize shortcuts on {configureUrl} page.'
   },
   shortcuts: {
     id: 'settings.shortcuts',
@@ -57,6 +57,12 @@ const messages = defineMessages({
   }
 });
 
+const styles = {
+  chromeLink: {
+    color: '#55534B'
+  }
+};
+
 const Settings = ({ onSettingChange, onTestConnect, ...props }) => {
   return (
     <div>
@@ -74,9 +80,9 @@ const Settings = ({ onSettingChange, onTestConnect, ...props }) => {
             {...messages.customizeShortcuts}
             values={{
               configureUrl: (
-                <a href="chrome://extensions/configureCommands">
+                <span style={styles.chromeLink}>
                   chrome://extensions/configureCommands
-                </a>
+                </span>
               )
             }}
           />

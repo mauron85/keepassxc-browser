@@ -12,7 +12,12 @@ const states = {
   UNKNOWN: -2,
   ERROR: -1,
   INITIAL: 0,
-  SHOW_CREDENTIALS_MENU: 1
+  // WAITING_FOR_CREDENTIALS: 5,
+  // SHOWING_USERNAMES: 6,
+  SHOW_USERNAMES: 1,
+  FILL_USERNAME: 2,
+  FILL_PASSWORD: 3,
+  FILLED_USERNAME: 4
 };
 
 function getMenuPositionRelativeToElement(el) {
@@ -28,22 +33,33 @@ function getMenuPositionRelativeToElement(el) {
 
 let run = () => {
   let port;
-  const defaultState = { appState: states.INITIAL, credentials: [], element: null };
+  let inputElement: HTMLInputElement;
+
+  const defaultState = {
+    currentState: states.INITIAL,
+    nextState: states.INITIAL,
+    credentials: [],
+    credentialSelected: -1
+  };
   const el = document.body.appendChild(document.createElement('div'));
   el.className = 'keepassxc';
 
   app({
     state: defaultState,
     view: (state, actions) => {
-      const { appState, inputElement, credentials } = state;
-      switch (appState) {
-        case states.SHOW_CREDENTIALS_MENU:
+      const { currentState, credentials, credentialSelected } = state;
+      switch (currentState) {
+        case states.FILL_USERNAME:
+        case states.FILL_PASSWORD:
+        case states.SHOW_USERNAMES:
           const menuPosition = getMenuPositionRelativeToElement(inputElement);
           return (
             <CredentialsMenu
               {...menuPosition}
               credentials={credentials}
-              onSelect={actions.onCredentialSelect}
+              selected={credentialSelected}
+              onHover={actions.handleMenuItemHover}
+              onSelect={actions.handleCredentialSelect}
             />
           );
         default:
@@ -51,70 +67,210 @@ let run = () => {
       }
     },
     actions: {
-      setState: (currentState, __, newState) => {
+      setState: (currentState, actions, newState) => {
         return Object.assign({}, currentState, newState);
       },
-      onCredentialSelect: (state, actions, credentialIndex) => {
-        const { inputElement, credentials } = state;
+      handleDocumentClick: (state, actions, event) => {
+        const el = event.target as HTMLInputElement;
+
+        if (state.currentState !== states.INITIAL && !/keepassxc/.test(el.className)) {
+          inputElement = null;
+          return defaultState;
+        }
+
+        // only process text and email inputs
+        if (['text', 'email'].indexOf(el.type) < 0) {
+          return state;
+        }
+
+        return actions.showUsernames(el);
+      },
+      handleKeyPress: (state, actions, event) => {
+        const key = event.key;
+        const { currentState, credentials } = state;
+        if (currentState === states.INITIAL) {
+          return state;
+        }
+
+        let { credentialSelected } = state;
+        switch (key) {
+          case 'Enter':
+            event.preventDefault();
+            return actions.handleCredentialSelect(credentialSelected);
+          case 'Escape':
+            return defaultState;
+          case 'Tab':
+            return Object.assign({}, state, { currentState: states.FILLED_USERNAME })
+          case 'ArrowUp':
+            credentialSelected = --credentialSelected < 0 ? credentials.length - 1 : credentialSelected;
+            return Object.assign({}, state, { credentialSelected })
+          case 'ArrowDown':
+            credentialSelected = ++credentialSelected > credentials.length - 1 ? 0 : credentialSelected;
+            return Object.assign({}, state, { credentialSelected })
+          default:
+            return state;
+        }
+      },
+      fillUsername: (state, actions) => {
+        const el = document.activeElement as HTMLInputElement;
+        const origin = document.location.origin;
+        const form = el.closest('form') as HTMLFormElement;
+        const formAction = form && form.action;
+
+        inputElement = el;
+
+        port.postMessage({
+          type: T.GET_CREDENTIALS,
+          payload: { origin, formAction }
+        });
+
+        return Object.assign({}, state, { nextState: states.FILL_USERNAME });
+      },
+      fillPassword: (state, actions) => {
+        const el = document.activeElement as HTMLInputElement;
+        const { currentState, credentials, credentialSelected } = state;
+
+        if (
+          currentState === states.FILLED_USERNAME &&
+          credentialSelected > -1
+        ) {
+          const { password } = credentials[credentialSelected];
+          el.value = password;
+          return defaultState;
+        }
+
+        const origin = document.location.origin;
+        const form = el.closest('form') as HTMLFormElement;
+        const formAction = form && form.action;
+
+        inputElement = el;
+
+        port.postMessage({
+          type: T.GET_CREDENTIALS,
+          payload: { origin, formAction }
+        });
+
+        return Object.assign({}, state, { nextState: states.FILL_PASSWORD });
+      },
+      showUsernames: (state, actions, el) => {
+        const origin = document.location.origin;
+        const form = el.closest('form') as HTMLFormElement;
+        const formAction = form && form.action;
+
+        inputElement = el;
+
+        port.postMessage({
+          type: T.GET_CREDENTIALS,
+          payload: { origin, formAction }
+        });
+
+        return Object.assign({}, state, { nextState: states.SHOW_USERNAMES });
+      },
+      handleMessage: (state, actions, msg) => {
+        switch (msg.type) {
+          case T.GET_CREDENTIALS_SUCCESS: {
+            const credentials = msg.payload;
+            if (!(Array.isArray(credentials) && credentials.length > 0)) {
+              return defaultState;
+            }
+
+            if (credentials.length === 1) {
+              const { nextState } = state;
+              if (nextState === states.FILL_USERNAME) {
+                inputElement.value = credentials[0].login;
+                return Object.assign({}, state, {
+                  currentState: states.FILLED_USERNAME,
+                  credentialSelected: 0,
+                  credentials
+                });     
+              }
+              if (nextState === states.FILL_PASSWORD) {
+                inputElement.value = credentials[0].password;
+                return defaultState;
+              }
+            }
+
+            return Object.assign({}, state, {
+              currentState: state.nextState,
+              credentials
+            });
+          }
+          case T.GET_CREDENTIALS_FAILURE:
+            console.log(msg.payload);
+            return defaultState;
+          default:
+            return state;
+        }
+      },
+      handleMenuItemHover: (state, actions, credentialIndex) => {
+        return Object.assign({}, state, { credentialSelected: credentialIndex });
+      },
+      handleCredentialSelect: (state, actions, credentialIndex) => {
+        const { currentState, credentials } = state;
         const { login, password } = credentials[credentialIndex];
-        inputElement.value = login;
-        const form = inputElement.closest('form');
-        if (form) {
-          const passwordElement = form.querySelector('input[type="password"]');
-          if (passwordElement) {
-            passwordElement.value = password;
+
+        if (currentState === states.FILL_USERNAME) {
+          inputElement.value = login;
+          inputElement.focus();
+          return Object.assign({}, state, {
+            currentState: states.FILLED_USERNAME,
+            credentialSelected: credentialIndex
+          });
+        }
+
+        if (currentState === states.FILL_PASSWORD) {
+          inputElement.value = password;
+          inputElement.focus();
+          return defaultState;
+        }
+
+        if (currentState === states.SHOW_USERNAMES) {
+          inputElement.value = login;
+          const form = inputElement.closest('form');
+          if (form) {
+            const passwordElement = form.querySelector(
+              'input[type="password"]'
+            ) as HTMLInputElement;
+            if (passwordElement) {
+              passwordElement.value = password;
+            }
           }
         }
 
-        actions.setState(defaultState);
+        return defaultState;
       }
     },
     events: {
       loaded: async (state, actions) => {
-        const settings = await getSettings();
+        // const { autoRetrieveCredentials } = await getSettings();
 
-        port = browser.runtime.connect({ name: 'content_script' });
-        port.onMessage.addListener(msg => {
+        browser.runtime.onMessage.addListener(msg => {
           switch (msg.type) {
-            case T.GET_CREDENTIALS_SUCCESS:
-              actions.setState({ credentials: msg.payload });
+            case T.FILL_USERNAME: {
+              actions.fillUsername();
               return true;
-            case T.GET_CREDENTIALS_FAILURE:
-              console.log(msg.payload);
-              // actions.setState({ credentials: msg.payload });
-              return true
+            }
+            case T.FILL_PASSWORD: {
+              actions.fillPassword();
+              return true;
+            }
             default:
               return false;
           }
         });
 
+        port = browser.runtime.connect({ name: 'content_script' });
+        port.onMessage.addListener(msg => {
+          actions.handleMessage(msg);
+        });
+
         // attach single global event listener
         document.addEventListener('click', event => {
-          // only process text and email inputs
-          const el = event.target as HTMLInputElement;
-          if (['text', 'email'].indexOf(el.type) < 0) {
-            return false;
-          }
+          actions.handleDocumentClick(event);
+        });
 
-          // TODO: add confidence check
-
-          const origin = document.location.origin;
-          const formAction = (el.closest('form') as HTMLFormElement).action;
-          port.postMessage({
-            type: T.GET_CREDENTIALS,
-            payload: { origin, formAction }
-          });
-
-          // el.addEventListener(
-          //   'blur',
-          //   () => setTimeout(() => actions.setState(defaultState), 250),
-          //   { once: true }
-          // );
-
-          actions.setState({
-            appState: states.SHOW_CREDENTIALS_MENU,
-            inputElement: el,
-          });
+        document.addEventListener('keydown', event => {
+          actions.handleKeyPress(event);
         });
 
         const [usernameEl, passwordEl] = getFormFields(10);
@@ -132,7 +288,5 @@ document.onreadystatechange = event => {
     return;
   }
 
-  // TODO: test if KeePassXC app is running
-  // TODO: If there are no logins for this site, bail out now.
   run();
 };

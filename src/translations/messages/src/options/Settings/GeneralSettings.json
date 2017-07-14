@@ -41,7 +41,7 @@
   },
   {
     "id": "settings.general.retrieveCredentialsDesc",
-    "defaultMessage": "keepassxc-browser will immediately retrieve the credentials when the tab is activated"
+    "defaultMessage": "keepassxc-browser will immediately retrieve the credentials when text field is focused"
   },
   {
     "id": "settings.general.autoCompleteUsername",

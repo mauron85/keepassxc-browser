@@ -19,7 +19,8 @@ import { defaultSettings } from '../common/store';
 import {
   getSettings,
   getAssociatedDatabases,
-  getCredentialFields
+  getCredentialFields,
+  getKeePassXCVersion
 } from './actions';
 
 const styles = {
@@ -127,7 +128,8 @@ class App extends Component {
     Promise.all([
       getSettings(),
       getCredentialFields(),
-      getAssociatedDatabases()
+      getAssociatedDatabases(),
+      // getKeePassXCVersion()
     ]).then(([settings, credentialFields, associatedDatabases]) => {
       this.setState({
         settings,

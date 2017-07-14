@@ -16,28 +16,46 @@ const styles = {
   }
 };
 
-const CredentialsMenu = ({ top, left, width, credentials, onSelect }) => {
+const CredentialsMenu = ({
+  top,
+  left,
+  width,
+  credentials,
+  selected,
+  onSelect,
+  onHover
+}) => {
   // Workaround: for position type
   // https://github.com/Microsoft/TypeScript/issues/11465
   const style = {
     position: 'absolute' as 'absolute',
     top: `${top}px`,
     left: `${left}px`,
-    width: width > MIN_WIDTH ? `${Math.round(width)}px` : `${MIN_WIDTH}px`,
+    minWidth: width > MIN_WIDTH ? `${Math.round(width)}px` : `${MIN_WIDTH}px`,
     minHeight: '30px'
   };
+
   return (
     <div style={style}>
       <div className="card card-2 card--credentials">
         {Array.isArray(credentials) && credentials.length > 0
           ? <ul className="keepassxc-credentials-menu">
-              {credentials.map(({ uuid, login, password }, index) =>
+              {credentials.map(({ uuid, name, login, password }, index) =>
                 <li
                   key={uuid}
-                  className="keepassxc-credentials-menu__item"
-                  onclick={() => onSelect(index)}
+                  className={`keepassxc-credentials-menu__item${selected ===
+                    index
+                    ? ' keepassxc-credentials-menu__item--selected'
+                    : ''}`}
+                  onclick={() => {
+                    onSelect(index);
+                  }}
+                  onmouseover={() => {
+                    onHover(index);
+                  }}
                 >
-                  {login}
+                  <div className="keepassxc-credentials-menu__username ">{login}</div>
+                  <div className="keepassxc-credentials-menu__url">{name}</div>
                 </li>
               )}
             </ul>

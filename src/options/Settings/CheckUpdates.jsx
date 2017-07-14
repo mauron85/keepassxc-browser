@@ -11,7 +11,7 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import FlatButton from 'material-ui/FlatButton';
 import ToggeableListItem from './components/ToggeableListItem';
-import { getKeepassXCVersion, getLatestKeePassXCVersion } from '../actions';
+import { getKeePassXCVersion, getLatestKeePassXCVersion } from '../actions';
 
 const messages = defineMessages({
   checkUpdates: {
@@ -105,7 +105,7 @@ class CheckUpdates extends Component {
 
   handleCheckForUpdates = () => {
     Promise.all([
-      getKeepassXCVersion(),
+      getKeePassXCVersion(),
       getLatestKeePassXCVersion()
     ])
     .then(([currentVersion, latestVersion]) => {

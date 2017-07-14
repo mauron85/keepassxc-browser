@@ -1,6 +1,6 @@
 export const messages = {
-  'fill_user_pass': 'Fill User + Pass',
-  'fill_pass_only': 'Fill Pass Only',
+  'fill_username': 'Fill username',
+  'fill_password': 'Fill password',
   'activate_password_generator': 'Show Password Generator Icons',
   'remember_credentials': 'Save credentials'
 }

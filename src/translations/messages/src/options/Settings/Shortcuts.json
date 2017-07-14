@@ -1,18 +1,23 @@
 [
   {
-    "id": "settings.shortcuts.inserPassword",
-    "defaultMessage": "Insert password only"
+    "id": "settings.shortcuts.insertPassword",
+    "defaultMessage": "Insert password"
   },
   {
-    "id": "settings.shortcuts.inserPasswordDesc",
-    "defaultMessage": "Insert only password into the field where your focus is"
+    "id": "settings.shortcuts.insertPasswordDesc",
+    "defaultMessage": "Insert password into the focused field"
   },
   {
-    "id": "settings.shortcuts.inserUserNamePassword",
-    "defaultMessage": "Insert username and password"
+    "id": "settings.shortcuts.insertUsername",
+    "defaultMessage": "Insert username"
   },
   {
-    "id": "settings.shortcuts.inserUserNamePasswordDesc",
-    "defaultMessage": "Insert username and password into the fields where your focus is"
+    "id": "settings.shortcuts.insertUsernameDesc",
+    "defaultMessage": "Insert username into the focused field"
+  },
+  {
+    "id": "settings.shortcuts.noShortut",
+    "description": "When no shorcut is assigned display Not set",
+    "defaultMessage": "Not set"
   }
 ]

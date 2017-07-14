@@ -1,10 +1,16 @@
-import { SagaIterator } from 'redux-saga';
-import { put, all, takeEvery, call, select } from 'redux-saga/effects';
+import { all, call } from 'redux-saga/effects';
 import browserSaga from './browser';
 import popupSaga from './popup';
+import commandSaga from './command';
+import contextMenuSaga from './contextMenu';
 import nativeClientSaga from './nativeClient';
-import * as T from '../../common/actionTypes';
 
 export default function* rootSaga() {
-  yield all([call(browserSaga), call(popupSaga), call(nativeClientSaga)]);
+  yield all([
+    call(browserSaga),
+    call(commandSaga),
+    call(popupSaga),
+    call(contextMenuSaga),
+    call(nativeClientSaga)
+  ]);
 }

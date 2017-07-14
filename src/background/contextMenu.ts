@@ -3,14 +3,14 @@ import * as T from '../common/actionTypes';
 
 export const contextMenu = [
   {
-    id: 'fill_user_pass',
-    title: messages.fill_user_pass,
+    id: 'fill_username',
+    title: messages.fill_username,
     contexts: ['editable'],
-    actionName: T.FILL_USERNAME_PASSWORD
+    actionName: T.FILL_USERNAME
   },
   {
-    id: 'fill_pass_only',
-    title: messages.fill_pass_only,
+    id: 'fill_password',
+    title: messages.fill_password,
     contexts: ['editable'],
     actionName: T.FILL_PASSWORD
   },

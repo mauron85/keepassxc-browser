@@ -19,7 +19,7 @@ import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton';
 import { pinkA200, transparent } from 'material-ui/styles/colors';
 import { GithubIcon, WebsiteIcon } from './icons';
-import { getKeepassXCVersion, getPluginVersion } from './actions';
+import { getKeePassXCVersion, getPluginVersion } from './actions';
 
 const styles = {
   logos: {
@@ -86,7 +86,7 @@ class About extends Component {
       pluginVersion: 'N/A'
     };
     Promise.all([
-      getKeepassXCVersion(),
+      getKeePassXCVersion(),
       getPluginVersion()
     ])
     .then(([currentVersion, pluginVersion]) => {

@@ -38,8 +38,8 @@
 		}
 	],
 	"commands": {
-		"fill_username_password": {
-			"description": "Insert username + password",
+		"fill_username": {
+			"description": "Insert username",
 			"suggested_key": {
 				"default": "Ctrl+Shift+U",
 				"mac": "Command+Shift+U"

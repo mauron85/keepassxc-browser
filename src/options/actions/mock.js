@@ -1,5 +1,14 @@
 import * as storage from '../../common/store';
 
+export function getShortcuts() {
+  return new Promise((resolve) => {
+    resolve([
+      { name: 'fill_username', description: '', shortcut: 'Ctrl+Shift+U' },
+      { name: 'fill_password', description: '', shortcut: 'Ctrl+Shift+P' },
+    ]);
+  });
+}
+
 export function getSettings() {
   return storage.getSettings();
 }
@@ -22,8 +31,8 @@ export function getPluginVersion() {
   return '0.2.0';
 }
 
-export function getKeepassXCVersion() {
-  console.log('[DEBUG] action: getKeepassXCVersions');
+export function getKeePassXCVersion() {
+  console.log('[DEBUG] action: getKeePassXCVersions');
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve('2.1.4');

@@ -144,6 +144,7 @@ const Connection = ({ intl, ...props }) => {
               </div>
             </li>
             }
+            {clientType === 'http' &&
             <li style={styles.listItem}>
               <div style={uiStyles.secondaryText}>
                 {formatMessage(messages.port)}
@@ -157,6 +158,7 @@ const Connection = ({ intl, ...props }) => {
                 />
               </div>
             </li>
+            }
             <li style={styles.listItem}>
               <FlatButton
                 disabled={isCheckingConnection}

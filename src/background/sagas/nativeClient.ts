@@ -10,9 +10,16 @@ const NATIVE_HOST_NAME = 'com.varjolintu.keepassxc_browser';
 export function* postMessage(message) {
   port.postMessage(message);
 
+  const response = yield take(message.action);
+  return response.payload;
+}
+
+export function* postMessageWithTimeout(message, timeoutInMillis = 3000) {
+  port.postMessage(message);
+
   const { response, timeout } = yield race({
     response: take(message.action),
-    timeout: call(delay, 3000)
+    timeout: call(delay, timeoutInMillis)
   });
 
   if (timeout) {
@@ -20,6 +27,7 @@ export function* postMessage(message) {
   }
 
   return response.payload;
+ 
 }
 
 export default function* nativeClientSaga() {

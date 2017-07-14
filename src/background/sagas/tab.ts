@@ -60,6 +60,7 @@ function* handleSetAssociatedDatabases(action) {
 
 function* handleAssociate() {
   try {
+    yield call(handleTestConnect);
     const { id, key, hash } = yield call([keepass, 'associate']);
     storage.addAssociatedDatabase(id, key, hash);
     return {
@@ -97,10 +98,10 @@ export default function* tabSaga(port) {
       // take(END) will cause the saga to terminate by jumping to the finally block
       let msg;
       const action = yield take(channel);
-      const { autoRetrieveCredentials, autoCompleteUsernames } = storage.getSettings();
+      // const { autoRetrieveCredentials, autoCompleteUsernames } = storage.getSettings();
       switch (action.type) {
         case T.GET_CREDENTIALS:          
-          msg = autoRetrieveCredentials ? yield call(handleGetCredentials, action) : null;
+          msg = yield call(handleGetCredentials, action);
           break;
         case T.GET_DATABASE_HASH:
           msg = yield call(handleGetDbHash);

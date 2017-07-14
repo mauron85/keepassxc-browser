@@ -96,7 +96,10 @@ let run = () => {
         switch (key) {
           case 'Enter':
             event.preventDefault();
-            return actions.handleCredentialSelect(credentialSelected);
+            if (credentialSelected > -1) {
+              return actions.handleCredentialSelect(credentialSelected);
+            }
+            return defaultState;
           case 'Escape':
             return defaultState;
           case 'Tab':

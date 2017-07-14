@@ -15,7 +15,7 @@ import {
 import getBrowser from '../../common/browser';
 import * as T from '../../common/actionTypes';
 import * as storage from '../../common/store';
-import { postMessage } from '../sagas/nativeClient';
+import { postMessage, postMessageWithTimeout } from '../sagas/nativeClient';
 
 const browser = getBrowser();
 
@@ -60,7 +60,7 @@ function* changePublicKeys() {
     success,
     nonce: responseNonce,
     publicKey: publicKeyBase64
-  } = yield call(postMessage, request);
+  } = yield call(postMessageWithTimeout, request);
 
   if (!success || !publicKeyBase64) {
     throw new Error('Public key exchange failed');
@@ -113,7 +113,7 @@ function* isAssociated(dbHash: string) {
     message: encrypt(requestMessage, nonce, serverPublicKey, secretKey),
     nonce: nonceBase64
   };
-  const response = yield call(postMessage, request);
+  const response = yield call(postMessageWithTimeout, request);
 
   // wait for response;
   const responseMessage = yield call(getDecryptedMessage, response);
@@ -126,7 +126,7 @@ function* isAssociated(dbHash: string) {
 
 export function* getDatabaseHash() {
   const request = { action: actions.GET_DATABASE_HASH };
-  const response = yield call(postMessage, request);
+  const response = yield call(postMessageWithTimeout, request);
   const { error: errorMessage, errorCode, hash } = response;
   if (errorCode) {
     const error = new Error(
@@ -197,7 +197,7 @@ export function* getCredentials(origin, formUrl) {
     message: encrypt(requestMessage, nonce, serverPublicKey, secretKey),
     nonce: encodeBase64(nonce)
   };
-  const response = yield call(postMessage, request);
+  const response = yield call(postMessageWithTimeout, request, 30000);
   const responseMessage = yield call(getDecryptedMessage, response);
 
   if (

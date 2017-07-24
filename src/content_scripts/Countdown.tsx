@@ -102,10 +102,6 @@ const CountdownComponent = props => {
         };
         countdown.start(duration);
       }}
-      onupdate={() => {
-        console.log('replacing canvas will stop countdown');
-        countdown.stop();
-      }}
       onremove={() => {
         console.log('removing canvas will stop countdown');
         countdown.stop();

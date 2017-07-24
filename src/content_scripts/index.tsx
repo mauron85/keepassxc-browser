@@ -156,8 +156,7 @@ let run = () => {
               key="countdown"
               {...getElementPosition(inputElement)}
               duration={30}
-              onFinish={1}
-              //onFinish={() => actions.setState(defaultState)}
+              onFinish={() => actions.setState(defaultState)}
             />
           );
           break;

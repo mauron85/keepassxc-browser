@@ -1,12 +1,12 @@
 import { h } from 'hyperapp';
 
 const InitialState = () =>
-  <div class="popup__content">
-    <div class="popup__status-check">
+  <div className="popup__content">
+    <div className="popup__status-check">
       <img
         width="20"
         height="20"
-        class="popup__status-check-spinner"
+        className="popup__status-check-spinner"
         src="spinner.gif"
       />
       <span>Checking status...</span>

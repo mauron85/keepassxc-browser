@@ -1,0 +1,10 @@
+[
+  {
+    "id": "clipboard.copyLink",
+    "defaultMessage": "Copy link to clipboard"
+  },
+  {
+    "id": "clipboard.linkCopied",
+    "defaultMessage": "Copied to clipboard!"
+  }
+]

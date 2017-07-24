@@ -95,8 +95,6 @@ function* isAssociated(dbHash: string) {
   const associatedDatabases = storage.getAssociatedDatabases();
   const { id = null, key = null } = associatedDatabases[dbHash] || {};
   if (!(id && key)) {
-    const error = new Error('Not associated with opened db');
-    yield put({ type: 'NOT_ASSOCIATED_ERROR', payload: error });
     return false;
   }
 
@@ -132,7 +130,6 @@ export function* getDatabaseHash() {
     const error = new Error(
       `Error getting database hash. Message: ${errorMessage} Code: ${errorCode}`
     );
-    yield put({ type: T.GET_DATABASE_HASH_FAILURE, payload: error });
     throw error;
   }
   return hash;

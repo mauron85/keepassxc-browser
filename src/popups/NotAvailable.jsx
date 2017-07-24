@@ -2,14 +2,13 @@ import { h } from 'hyperapp';
 
 const NotAvailable = props => {
   return (
-    <div class="popup__content">
-      <div class="popup__message">
+    <div className="popup__content">
+      <div className="popup__message">
         Cannot connect to KeePassXC. Check if app is running.
       </div>
-      <div class="popup__actions">
+      <div className="popup__actions">
         <button
-          id="reload-status-button"
-          class="btn btn-sm btn-a"
+          className="btn btn-sm btn-a"
           onclick={props.onReconnect}
         >
           Try again

@@ -9,94 +9,42 @@ import NeedReconfigure from './NeedReconfigure';
 import NotAssociated from './NotAssociated';
 import Associated from './Associated';
 import ShowError from './ShowError';
-import InvalidState from './InitialState';
-import { sendMessageWithTimeout, TimeoutError } from './messaging';
+import InvalidState from './InvalidState';
 import sanitizeString from '../common/sanitizeString';
+import getBrowser from '../common/browser';
+import * as T from '../common/actionTypes';
 
-const state = {
-  UNKNOWN: -2,
-  ERROR: -1,
-  INITIAL: 0,
-  NOT_AVAILABLE: 1,
-  DB_CLOSED: 2,
-  NOT_CONFIGURED: 3,
-  UNRECOGNIZED_ENCRYPTION_KEY: 4,
-  NOT_ASSOCIATED: 5,
-  ASSOCIATED: 6
+const allStates = {
+  UNKNOWN: 'UNKNOWN',
+  ERROR: 'ERROR',
+  INITIAL: 'INITIAL',
+  NOT_AVAILABLE: 'NOT_AVAILABLE',
+  DB_CLOSED: 'DB_CLOSED',
+  NOT_CONFIGURED: 'NOT_CONFIGURED',
+  UNRECOGNIZED_ENCRYPTION_KEY: 'UNRECOGNIZED_ENCRYPTION_KEY',
+  NOT_ASSOCIATED: 'NOT_ASSOCIATED',
+  ASSOCIATED: 'ASSOCIATED'
 };
 
-const responseToState = props => {
-  const {
-    keePassXCAvailable = false,
-    databaseClosed,
-    configured,
-    encryptionKeyUnrecognized,
-    associated,
-    identifier,
-    error
-  } = props;
-  if (!keePassXCAvailable) {
-    return state.NOT_AVAILABLE;
-  }
-  if (databaseClosed) {
-    return state.DB_CLOSED;
-  }
-  if (!configured) {
-    return state.NOT_CONFIGURED;
-  }
-  if (encryptionKeyUnrecognized) {
-    return state.UNRECOGNIZED_ENCRYPTION_KEY;
-  }
-  if (!associated) {
-    return state.NOT_ASSOCIATED;
-  }
-  if (error) {
-    return state.ERROR;
-  }
-  if (identifier) {
-    return state.ASSOCIATED;
-  }
-  return state.UNKNOWN;
-};
-
-let getStatus;
-if (window.chrome && chrome.runtime && chrome.runtime.id) {
-  // Code running in a Chrome extension (content script, background page, etc.)
-  getStatus = timeoutInMillis =>
-    sendMessageWithTimeout({ action: 'get_status' }, timeoutInMillis);
-} else {
-  // this is just for development in normal browser window
-  getStatus = timeoutInMillis => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        reject(new Error(`Response time out after ${timeoutInMillis} ms`));
-        // resolve({
-        //   keePassXCAvailable: true,
-        //   databaseClosed: false,
-        //   configured: true,
-        //   encryptionKeyUnrecognized: true,
-        //   associated: true,
-        //   error: 'aaa'
-        // });
-      }, timeoutInMillis);
-    });
-  };
-}
+const browser = getBrowser();
 
 export default function render() {
+  let port;
+
   const defaultState = {
-    appState: state.INITIAL,
+    appState: allStates.INITIAL,
     indentifier: '',
     error: null
   };
 
   app({
-    state: Object.assign({ isNewerVersion: false }, defaultState),
-    view: ({ appState, error, trace, identifier, isNewerVersion }, actions) => {
+    state: defaultState,
+    view: (state, actions) => {
+      const { appState, error, trace, identifier } = state;
       switch (appState) {
-        case state.ERROR:
+        case allStates.ERROR:
           return (
-            <Popup showUpdateNotice={isNewerVersion}>
+            <Popup>
               <ShowError
                 trace={sanitizeString(trace)}
                 error={error}
@@ -104,48 +52,48 @@ export default function render() {
               />
             </Popup>
           );
-        case state.INITIAL:
+        case allStates.INITIAL:
           return (
-            <Popup showUpdateNotice={isNewerVersion}>
+            <Popup>
               <InitialState />
             </Popup>
           );
-        case state.NOT_AVAILABLE:
+        case allStates.NOT_AVAILABLE:
           return (
-            <Popup showUpdateNotice={isNewerVersion}>
+            <Popup>
               <NotAvailable onReconnect={actions.reconnect} />
             </Popup>
           );
-        case state.DB_CLOSED:
+        case allStates.DB_CLOSED:
           return (
-            <Popup showUpdateNotice={isNewerVersion}>
+            <Popup>
               <DbClosed onReconnect={actions.reconnect} />
             </Popup>
           );
-        case state.NOT_CONFIGURED:
+        case allStates.NOT_CONFIGURED:
           return (
-            <Popup showUpdateNotice={isNewerVersion}>
-              <NotConfigured onConfigure={actions.configure} />
+            <Popup>
+              <NotConfigured onConfigure={actions.associate} />
             </Popup>
           );
-        case state.UNRECOGNIZED_ENCRYPTION_KEY:
+        case allStates.UNRECOGNIZED_ENCRYPTION_KEY:
           return (
-            <Popup showUpdateNotice={isNewerVersion}>
+            <Popup>
               <NeedReconfigure
                 message={error}
-                onConfigure={actions.configure}
+                onConfigure={actions.associate}
               />
             </Popup>
           );
-        case state.NOT_ASSOCIATED:
+        case allStates.NOT_ASSOCIATED:
           return (
-            <Popup showUpdateNotice={isNewerVersion}>
+            <Popup>
               <NotAssociated onConfigure={actions.reconnect} />
             </Popup>
           );
-        case state.ASSOCIATED:
+        case allStates.ASSOCIATED:
           return (
-            <Popup showUpdateNotice={isNewerVersion}>
+            <Popup>
               <Associated identifier={identifier} />
             </Popup>
           );
@@ -160,90 +108,33 @@ export default function render() {
     actions: {
       // using underscore for params not interested in
       // this is mostly 'state' we are replacing with new
-      setState: (currentState, __, newState) => {
+      setState: (currentState, actions, newState) => {
         return Object.assign({}, currentState, newState);
       },
-      configure: async (_, actions) => {
-        actions.setState(defaultState);
-        try {
-          const response = await sendMessageWithTimeout(
-            { action: 'associate' },
-            5000
-          );
-          const appState = responseToState(response);
-          const { error, identifier } = response;
-          actions.setState({ appState, error, identifier });
-        } catch (error) {
-          if (error instanceof TimeoutError) {
-            actions.setState({
-              appState: state.NOT_AVAILABLE,
-              error: error.message
-            });
-          } else {
-            actions.setState({
-              appState: state.ERROR,
-              error: error.message,
-              trace: error.stack
-            });
-          }
-        }
+      associate: async (state, actions) => {
+        port.postMessage({ type: T.ASSOCIATE });
+        return defaultState;
       },
-      reconnect: async (_, actions) => {
-        actions.setState(defaultState);
-        try {
-          const response = await sendMessageWithTimeout(
-            { action: 'reconnect' },
-            5000
-          );
-          const appState = responseToState(response);
-          const { error, identifier } = response;
-          actions.setState({ appState, error, identifier });
-        } catch (error) {
-          if (error instanceof TimeoutError) {
-            actions.setState({
-              appState: state.NOT_AVAILABLE,
-              error: error.message
-            });
-          } else {
-            actions.setState({
-              appState: state.ERROR,
-              error: error.message,
-              trace: error.stack
-            });
-          }
+      reconnect: async (state, actions) => {
+        port.postMessage({ type: T.RECONNECT });
+        return defaultState;
+      },
+      handleMessage: (state, actions, msg) => {
+        switch (msg.type) {
+          case T.GET_STATUS_SUCCESS:
+            return Object.assign({}, state, { appState: msg.payload.status });
+          default:
+            return state;
         }
       }
     },
     events: {
-      loaded: async (_, actions) => {
-        try {
-          const isNewerVersion = await sendMessageWithTimeout(
-            { action: 'update_available_keepassxc' },
-            15000
-          );
-          const response = await getStatus(5000);
-          const appState = responseToState(response);
-          const { error, identifier } = response;
-          actions.setState({
-            appState,
-            identifier,
-            error,
-            isNewerVersion
-          });
-        } catch (error) {
-          if (error instanceof TimeoutError) {
-            actions.setState({
-              appState: state.NOT_AVAILABLE,
-              error: error.message
-            });
-          } else {
-            actions.setState({
-              appState: state.ERROR,
-              error: error.message,
-              trace: error.stack
-            });
-          }
-        }
+      loaded: async (state, actions) => {
+        port = browser.runtime.connect({ name: 'popup' });
+        port.onMessage.addListener(msg => {
+          actions.handleMessage(msg);
+        });
+        port.postMessage({ type: T.GET_STATUS });
       }
     },
     root: document.getElementById('popup')

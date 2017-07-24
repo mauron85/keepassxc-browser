@@ -6,23 +6,11 @@
   {
     "id": "settings.general.customizeShortcuts",
     "description": "Title shown in General Settings Card",
-    "defaultMessage": "Due browse policy you can only customize shortcuts on {configureUrl} page."
+    "defaultMessage": "Due to browse policy shortcuts can be customized on {link} only. Clicking on address will copy it to the clipboard."
   },
   {
     "id": "settings.shortcuts",
     "defaultMessage": "Shortcuts"
-  },
-  {
-    "id": "settings.installedKeePassXCVersion",
-    "defaultMessage": "Installed KeePassXC: {version}"
-  },
-  {
-    "id": "settings.availableKeePassXCVersion",
-    "defaultMessage": "Available KeePassXC: {version}"
-  },
-  {
-    "id": "settings.general.downloadLink",
-    "defaultMessage": "keepassxc-browser needs KeePassXC to retrieve credentials. You can download the latest stable version from here: {link}"
   },
   {
     "id": "settings.general.unsafeSettings",

@@ -1,9 +1,9 @@
 import { take, put, call, apply, fork } from 'redux-saga/effects';
-import createChannel, { ON_CONNECT } from './channels/runtime';
-import tabSaga from './tab';
+import createChannel, { actions } from './channels/tabs';
+import getBrowser from '../../common/browser';
 import * as T from '../../common/actionTypes';
 
-export default function* browserSaga() {
+export default function* tabsSaga() {
   const channel = yield call(createChannel);
 
   try {
@@ -11,15 +11,14 @@ export default function* browserSaga() {
     while (true) {
       const action = yield take(channel);
       switch (action.type) {
-        case ON_CONNECT:
-          // TODO: replace fork with call, because we don't want to allow parallel messaging from multiple tabs
-          yield fork(tabSaga, action.port);
+        case actions.TAB_ACTIVATED:
+          yield put({ type: T.TAB_ACTIVATED, payload: action.payload });
           break;
         default:
           break;
       }
     }
   } finally {
-    console.log('browserSaga terminated');
+    console.log('tabsSaga terminated');
   }
 }

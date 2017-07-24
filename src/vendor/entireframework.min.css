@@ -1,0 +1,245 @@
+/* Copyright 2014 Owen Versteeg; MIT licensed */
+.keepassxc_20170717,
+.keepassxc_20170717 textarea,
+.keepassxc_20170717 input,
+.keepassxc_20170717 select {
+  background: 0;
+  border-radius: 0;
+  font: 16px sans-serif;
+  margin: 0;
+}
+.keepassxc_20170717 .smooth {
+  transition: all .2s;
+}
+.keepassxc_20170717 .btn,
+.keepassxc_20170717 .nav a {
+  text-decoration: none;
+}
+.keepassxc_20170717 .container {
+  margin: 0 20px;
+  width: auto;
+}
+.keepassxc_20170717 label > * {
+  display: inline;
+}
+.keepassxc_20170717 form > * {
+  display: block;
+  margin-bottom: 10px;
+}
+.keepassxc_20170717 .btn {
+  background: #999;
+  border-radius: 6px;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  margin: 2px 0;
+  padding: 12px 30px 14px;
+}
+.keepassxc_20170717 .btn:hover {
+  background: #888;
+}
+.keepassxc_20170717 .btn:active,
+.keepassxc_20170717 .btn:focus {
+  background: #777;
+}
+.keepassxc_20170717 .btn-a {
+  background: #0ae;
+}
+.keepassxc_20170717 .btn-a:hover {
+  background: #09d;
+}
+.keepassxc_20170717 .btn-a:active,
+.keepassxc_20170717 .btn-a:focus {
+  background: #08b;
+}
+.keepassxc_20170717 .btn-b {
+  background: #3c5;
+}
+.keepassxc_20170717 .btn-b:hover {
+  background: #2b4;
+}
+.keepassxc_20170717 .btn-b:active,
+.keepassxc_20170717 .btn-b:focus {
+  background: #2a4;
+}
+.keepassxc_20170717 .btn-c {
+  background: #d33;
+}
+.keepassxc_20170717 .btn-c:hover {
+  background: #c22;
+}
+.keepassxc_20170717 .btn-c:active,
+.keepassxc_20170717 .btn-c:focus {
+  background: #b22;
+}
+.keepassxc_20170717 .btn-sm {
+  border-radius: 4px;
+  padding: 10px 14px 11px;
+}
+.keepassxc_20170717 .row {
+  margin: 1% 0;
+  overflow: auto;
+}
+.keepassxc_20170717 .col {
+  float: left;
+}
+.keepassxc_20170717 .table,
+.keepassxc_20170717 .c12 {
+  width: 100%;
+}
+.keepassxc_20170717 .c11 {
+  width: 91.66%;
+}
+.keepassxc_20170717 .c10 {
+  width: 83.33%;
+}
+.keepassxc_20170717 .c9 {
+  width: 75%;
+}
+.keepassxc_20170717 .c8 {
+  width: 66.66%;
+}
+.keepassxc_20170717 .c7 {
+  width: 58.33%;
+}
+.keepassxc_20170717 .c6 {
+  width: 50%;
+}
+.keepassxc_20170717 .c5 {
+  width: 41.66%;
+}
+.keepassxc_20170717 .c4 {
+  width: 33.33%;
+}
+.keepassxc_20170717 .c3 {
+  width: 25%;
+}
+.keepassxc_20170717 .c2 {
+  width: 16.66%;
+}
+.keepassxc_20170717 .c1 {
+  width: 8.33%;
+}
+.keepassxc_20170717 h1 {
+  font-size: 3em;
+}
+.keepassxc_20170717 .btn,
+.keepassxc_20170717 h2 {
+  font-size: 2em;
+}
+.keepassxc_20170717 .ico {
+  font: 33px Arial Unicode MS, Lucida Sans Unicode;
+}
+.keepassxc_20170717 .addon,
+.keepassxc_20170717 .btn-sm,
+.keepassxc_20170717 .nav,
+.keepassxc_20170717 textarea,
+.keepassxc_20170717 input,
+.keepassxc_20170717 select {
+  outline: 0;
+  font-size: 14px;
+}
+.keepassxc_20170717 textarea,
+.keepassxc_20170717 input,
+.keepassxc_20170717 select {
+  padding: 8px;
+  border: 1px solid #ccc;
+}
+.keepassxc_20170717 textarea:focus,
+.keepassxc_20170717 input:focus,
+.keepassxc_20170717 select:focus {
+  border-color: #5ab;
+}
+.keepassxc_20170717 textarea,
+.keepassxc_20170717 input[type=text] {
+  -webkit-appearance: none;
+  width: 13em;
+}
+.keepassxc_20170717 .addon {
+  padding: 8px 12px;
+  box-shadow: 0 0 0 1px #ccc;
+}
+.keepassxc_20170717 .nav,
+.keepassxc_20170717 .nav .current,
+.keepassxc_20170717 .nav a:hover {
+  background: #000;
+  color: #fff;
+}
+.keepassxc_20170717 .nav {
+  height: 24px;
+  padding: 11px 0 15px;
+}
+.keepassxc_20170717 .nav a {
+  color: #aaa;
+  padding-right: 1em;
+  position: relative;
+  top: -1px;
+}
+.keepassxc_20170717 .nav .pagename {
+  font-size: 22px;
+  top: 1px;
+}
+.keepassxc_20170717 .btn.btn-close {
+  background: #000;
+  float: right;
+  font-size: 25px;
+  margin: -54px 7px;
+  display: none;
+}
+@media (min-width: 1310px) {
+  .keepassxc_20170717 .container {
+    margin: auto;
+    width: 1270px;
+  }
+}
+@media (max-width: 870px) {
+  .keepassxc_20170717 .row .col {
+    width: 100%;
+  }
+}
+@media (max-width: 500px) {
+  .keepassxc_20170717 .btn.btn-close {
+    display: block;
+  }
+  .keepassxc_20170717 .nav {
+    overflow: hidden;
+  }
+  .keepassxc_20170717 .pagename {
+    margin-top: -11px;
+  }
+  .keepassxc_20170717 .nav:active,
+  .keepassxc_20170717 .nav:focus {
+    height: auto;
+  }
+  .keepassxc_20170717 .nav div:before {
+    background: #000;
+    border-bottom: 10px double;
+    border-top: 3px solid;
+    content: '';
+    float: right;
+    height: 4px;
+    position: relative;
+    right: 3px;
+    top: 14px;
+    width: 20px;
+  }
+  .keepassxc_20170717 .nav a {
+    padding: .5em 0;
+    display: block;
+    width: 50%;
+  }
+}
+.keepassxc_20170717 .table th,
+.keepassxc_20170717 .table td {
+  padding: .5em;
+  text-align: left;
+}
+.keepassxc_20170717 .table tbody > :nth-child(2n-1) {
+  background: #ddd;
+}
+.keepassxc_20170717 .msg {
+  padding: 1.5em;
+  background: #def;
+  border-left: 5px solid #59d;
+}

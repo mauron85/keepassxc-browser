@@ -3,21 +3,13 @@ import { h } from 'hyperapp';
 const MIN_WIDTH = 200;
 
 const styles = {
-  footer: {
-    width: '100%',
-    lineHeight: '11px',
-    textAlign: 'right',
-    fontSize: '8px',
-    color: '#fff',
-    backgroundColor: '#4A8F38'
-  },
   courtesy: {
     marginRight: '4px'
   }
 };
 
 const CredentialsMenu = ({
-  top,
+  bottom,
   left,
   width,
   credentials,
@@ -29,23 +21,25 @@ const CredentialsMenu = ({
   // https://github.com/Microsoft/TypeScript/issues/11465
   const style = {
     position: 'absolute' as 'absolute',
-    top: `${top}px`,
+    top: `${bottom}px`,
     left: `${left}px`,
     minWidth: width > MIN_WIDTH ? `${Math.round(width)}px` : `${MIN_WIDTH}px`,
-    minHeight: '30px'
+    minHeight: '30px',
+    marginLeft: '2px',
+    marginTop: '5px'
   };
 
   return (
     <div style={style}>
-      <div className="card card-2 card--credentials">
+      <div className="keepassxc-card" style={{ width: '100%' }}>
         {Array.isArray(credentials) && credentials.length > 0
-          ? <ul className="keepassxc-credentials-menu">
+          ? <ul className="keepassxc-credentials">
               {credentials.map(({ uuid, name, login, password }, index) =>
                 <li
                   key={uuid}
-                  className={`keepassxc-credentials-menu__item${selected ===
+                  className={`keepassxc-credentials__item${selected ===
                     index
-                    ? ' keepassxc-credentials-menu__item--selected'
+                    ? ' keepassxc-credentials__item--selected'
                     : ''}`}
                   onclick={() => {
                     onSelect(index);
@@ -54,13 +48,13 @@ const CredentialsMenu = ({
                     onHover(index);
                   }}
                 >
-                  <div className="keepassxc-credentials-menu__username ">{login}</div>
-                  <div className="keepassxc-credentials-menu__url">{name}</div>
+                  <div className="keepassxc-credentials__username ">{login}</div>
+                  <div className="keepassxc-credentials__url">{name}</div>
                 </li>
               )}
             </ul>
-          : <div className="keepassxc-credentials-menu--empty" />}
-        <div style={styles.footer}>
+          : <div className="keepassxc-credentials--empty" />}
+        <div className="keepassxc-credentials__footer">
           <span style={styles.courtesy}>KeePassXC</span>
         </div>
       </div>

@@ -1,46 +1,38 @@
+/* globals window */
 import { h } from 'hyperapp';
+import getBrowser from '../common/browser';
+import * as T from '../common/actionTypes';
 
-const browser = window.msBrowser || window.browser || window.chrome;
+const browser = getBrowser();
 
 const specifyCredentialsFields = () => {
-  browser.runtime.getBackgroundPage(global => {
-    // TODO:
-    browser.tabs.sendMessage(global.page.currentTabId, {
-      action: 'choose_credential_fields'
+  browser.tabs.query({ currentWindow: true, active: true }, (tabs) => {
+    browser.tabs.sendMessage(tabs[0].id, {
+      type: T.CHOOSE_CREDENTIALS_FIELDS
     });
-    close();
+    window.close();
   });
 };
 
 const openOptionsPage = () => {
   browser.runtime.openOptionsPage();
-  close();
+  window.close();
 };
 
 const Popup = (props, children) => {
-  const { showUpdateNotice = false } = props || {};
   return (
-    <div class="popup">
-      <div id="settings" class="settings">
+    <div className="popup">
+      <div id="settings" className="settings">
         <button
-          id="btn-choose-credential-fields"
-          class="btn btn-sm btn-b"
+          className="btn btn-sm btn-b"
           onclick={specifyCredentialsFields}
         >
           Set credential fields for this page
         </button>
-        {showUpdateNotice &&
-          <div class="update-available">
-            You use an old version of KeePassXC.
-            <br />
-            <a target="_blank" href="https://keepassxc.org/download">
-              Please download the latest version from keepassxc.org
-            </a>.
-          </div>}
       </div>
       {children}
-      <div class="popup__footer">
-        <a href="#" class="link" onclick={openOptionsPage}>
+      <div className="popup__footer">
+        <a href="#" className="link" onclick={openOptionsPage}>
           Extension options
         </a>
       </div>

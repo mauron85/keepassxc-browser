@@ -1,5 +1,5 @@
 import { take, put, call, apply, fork } from 'redux-saga/effects';
-import createChannel from './channels/contextMenu';
+import createChannel from './channels/contextMenus';
 import getBrowser from '../../common/browser';
 import * as T from '../../common/actionTypes';
 

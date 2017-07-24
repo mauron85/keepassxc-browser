@@ -1,20 +1,19 @@
 import { h } from 'hyperapp';
 
 const NeedReconfigure = props =>
-  <div class="popup__content">
-    <div class="popup__message">
+  <div className="popup__content">
+    <div className="popup__message">
       keepassxc-browser has been disconnected from KeePassXC.
-      <div class="error">
-        <code class="error__message">{props.message}</code>
+      <div className="error">
+        <code className="error__message">{props.message}</code>
       </div>
       <div>
         Press the reconnect button to establish a new connection.
       </div>
     </div>
-    <div class="popup__actions">
+    <div className="popup__actions">
       <button
-        id="reconnect-button"
-        class="btn btn-sm btn-a"
+        className="btn btn-sm btn-a"
         onclick={props.onConfigure}
       >
         Reconnect

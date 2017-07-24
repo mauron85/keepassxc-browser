@@ -178,3 +178,20 @@ export function getFormFields(
 
   return [null, null, null];
 }
+
+export function isUsernameField(element, minConfidence = 20) {
+  if (!(element && (['text', 'email'].indexOf(element.type) > -1))) {
+    return false;
+  }
+
+  const form = element.form;
+  if (form) {
+    const forms = sortFormsByConfidence([form]);
+    const { confidence, usernameFields, passwordFields } = forms[0];
+    if (confidence >= minConfidence) {
+      return true;
+    }
+  }
+
+  return false;
+}

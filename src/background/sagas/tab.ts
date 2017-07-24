@@ -1,10 +1,14 @@
 import { take, put, call, apply } from 'redux-saga/effects';
 import createChannel from './channels/portMessage';
 import * as storage from '../../common/store';
-import getKeepassInstance, { NATIVE_CLIENT, HTTP_CLIENT } from '../keepass/factory';
+import getKeepassInstance, {
+  NATIVE_CLIENT,
+  HTTP_CLIENT
+} from '../keepass/factory';
 import * as T from '../../common/actionTypes';
 
-let keepass;
+const { clientType } = storage.getSettings();
+let keepass = getKeepassInstance(clientType) as any;
 
 function errorToJSON(error) {
   return {
@@ -17,7 +21,11 @@ function errorToJSON(error) {
 function* handleGetCredentials(action) {
   try {
     const { origin, formAction } = action.payload;
-    const credentials = yield call([keepass, 'getCredentials'],origin, formAction);
+    const credentials = yield call(
+      [keepass, 'getCredentials'],
+      origin,
+      formAction
+    );
     return {
       type: T.GET_CREDENTIALS_SUCCESS,
       payload: credentials
@@ -32,7 +40,7 @@ function* handleGetCredentials(action) {
 
 function* handleGetDbHash() {
   try {
-    const hash = yield call([keepass ,'getDatabaseHash']);
+    const hash = yield call([keepass, 'getDatabaseHash']);
     return {
       type: T.GET_DATABASE_HASH_SUCCESS,
       payload: hash
@@ -60,13 +68,14 @@ function* handleSetAssociatedDatabases(action) {
 
 function* handleAssociate() {
   try {
-    yield call(handleTestConnect);
+    yield call([keepass, 'getDatabaseHash']); // test connect
     const { id, key, hash } = yield call([keepass, 'associate']);
     storage.addAssociatedDatabase(id, key, hash);
+    yield put({ type: T.ASSOCIATE_SUCCESS });
     return {
       type: T.ASSOCIATE_SUCCESS
-    };   
-  } catch(error) {
+    };
+  } catch (error) {
     return {
       type: T.ASSOCIATE_FAILURE,
       payload: errorToJSON(error)
@@ -76,7 +85,7 @@ function* handleAssociate() {
 
 function* handleTestConnect() {
   try {
-    const hash = yield call([keepass ,'getDatabaseHash']);
+    const hash = yield call([keepass, 'getDatabaseHash']);
     return {
       type: T.TEST_CONNECT_SUCCESS
     };
@@ -88,10 +97,34 @@ function* handleTestConnect() {
   }
 }
 
+function* handleGetStatus() {
+  try {
+    const hash = yield call([keepass, 'getDatabaseHash']);
+    const isDbAssociated = yield call([keepass, 'isAssociated'], hash);
+    return {
+      type: T.GET_STATUS_SUCCESS,
+      payload: {
+        status: isDbAssociated ? 'ASSOCIATED' : 'NOT_ASSOCIATED'
+      }
+    };
+  } catch (error) {
+    return {
+      type: T.GET_STATUS_SUCCESS,
+      payload: { status: 'NOT_AVAILABLE' }
+    };
+  }
+}
+
+export function* getDatabaseHash() {
+  return yield call([keepass, 'getDatabaseHash']);
+}
+
+export function* isAssociated(hash) {
+  return yield call([keepass, 'isAssociated'], hash);
+}
+
 export default function* tabSaga(port) {
   const channel = yield call(createChannel, port);
-  const { clientType } = storage.getSettings();
-  keepass = getKeepassInstance(clientType);
 
   try {
     while (true) {
@@ -100,7 +133,7 @@ export default function* tabSaga(port) {
       const action = yield take(channel);
       // const { autoRetrieveCredentials, autoCompleteUsernames } = storage.getSettings();
       switch (action.type) {
-        case T.GET_CREDENTIALS:          
+        case T.GET_CREDENTIALS:
           msg = yield call(handleGetCredentials, action);
           break;
         case T.GET_DATABASE_HASH:
@@ -117,6 +150,9 @@ export default function* tabSaga(port) {
           break;
         case T.TEST_CONNECT:
           msg = yield call(handleTestConnect);
+          break;
+        case T.GET_STATUS:
+          msg = yield call(handleGetStatus);
           break;
         default:
           break;

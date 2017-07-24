@@ -5,7 +5,7 @@
   "scripts": {
     "clean:dist": "rimraf dist",
     "clean:preview": "rimraf preview",
-    "copy:dist": "copyfiles -u 1 src/* src/icons/{*,**}/* src/popups/{*,**}/* src/content_scripts/{*,**}/* src/vendor/{*,**}/* dist/",
+    "copy:dist": "copyfiles -u 1 src/* src/vendor/{*,**}/* src/icons/{*,**}/* src/popups/{*,**}/*.{css,html,gif} src/content_scripts/*.css dist/",
     "copy:preview": "copyfiles -u 1 src/*.{html,ico} src/icons/** preview/",
     "manage:locales": "BABEL_ENV=i18n babel src > /dev/null",
     "manage:translations": "node ./translationRunner.js",
@@ -28,7 +28,8 @@
   "author": "",
   "license": "GNU",
   "dependencies": {
-    "hyperapp": "^0.9.3",
+    "copy-to-clipboard": "^3.0.6",
+    "hyperapp": "^0.10.1",
     "lodash": "^4.17.4",
     "material-ui": "^0.18.3",
     "prop-types": "^15.5.10",

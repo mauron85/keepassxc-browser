@@ -1,3 +1,4 @@
+export const CHOOSE_CREDENTIALS_FIELDS = 'choose_credentials_fields';
 export const FILL_USERNAME = 'fill_username';
 export const FILL_PASSWORD = 'fill_password';
 export const GET_SETTINGS = 'get_settings';
@@ -20,3 +21,6 @@ export const INVALIDATE_KEYS = 'invalidate_keys';
 export const TEST_CONNECT = 'test_connect';
 export const TEST_CONNECT_SUCCESS = 'test_connect_success';
 export const TEST_CONNECT_FAILURE = 'test_connect_failure';
+export const TAB_ACTIVATED = 'tab_activated';
+export const GET_STATUS = 'get_status';
+export const GET_STATUS_SUCCESS = 'get_status_success';

@@ -1,21 +1,21 @@
 import { h } from 'hyperapp';
-import { sendMessage } from './messaging';
 
-const redetectCredentialFields = () => sendMessage('redetect_fields');
+const redetectCredentialFields = () => {
+  // TODO:
+};
 
 const Associated = props => {
   const { identifier } = props || {};
   return (
-    <div class="popup__content">
-      <div class="popup__message">
-        keepassxc-browser has been configured using the identifier "
-        <em>{identifier}</em>" and is successfully connected to
+    <div className="popup__content">
+      <div className="popup__message">
+        keepassxc-browser has been configured using the identifier &Prime;
+        <em>{identifier}</em>&Prime; and is successfully connected to
         KeePassXC.
       </div>
-      <div class="popup__actions">
+      <div className="popup__actions">
         <button
-          id="redetect-fields-button"
-          class="btn btn-sm"
+          className="btn btn-sm"
           onclick={redetectCredentialFields}
         >
           Redetect credential fields

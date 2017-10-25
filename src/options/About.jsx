@@ -55,9 +55,17 @@ const styles = {
 };
 
 const messages = defineMessages({
-  title: {
-    id: 'about.title',
+  contributors: {
+    id: 'about.contributors',
     defaultMessage: 'Contributors'
+  },
+  credits: {
+    id: 'about.credits',
+    defaultMessage: 'Special thanks'
+  },
+  license: {
+    id: 'about.license',
+    defaultMessage: 'License'
   },
   versions: {
     id: 'about.vesions',
@@ -99,25 +107,70 @@ class About extends Component {
     return (
       <div>
         <div className="header">
-          <h2 className="title"><FormattedMessage {...messages.title} /></h2>
+          <h2 className="title"><FormattedMessage {...messages.contributors} /></h2>
         </div>
         <Card>
           <List>
-            <a href="https://github.com/pfn/">
-              <ListItem primaryText="Perry Nguyen" leftIcon={<GithubIcon />} />
-            </a>
-            <Divider />
-            <a href="http://lukas-schulze.de/">
-              <ListItem
-                primaryText="Lukas Schulze"
-                leftIcon={<WebsiteIcon />}
-              />
+            <a href="https://github.com/mauron85/">
+              <ListItem primaryText="Marián Hello" leftIcon={<GithubIcon />} />
             </a>
             <Divider />
             <a href="https://github.com/varjolintu/">
               <ListItem
                 primaryText="Sami Vänttinen"
                 leftIcon={<GithubIcon />}
+              />
+            </a>
+          </List>
+        </Card>
+        <div className="header">
+          <h2 className="title"><FormattedMessage {...messages.credits} /></h2>
+        </div>
+        <Card>
+          <List>
+            <a href="https://github.com/pfn/passifox">
+              <ListItem primaryText="PassIFox/chromeIPass" leftIcon={<GithubIcon />} />
+            </a>
+            <Divider />
+            <a href="https://github.com/redux-saga/redux-saga">
+              <ListItem
+                primaryText="Redux-Saga"
+                leftIcon={<GithubIcon />}
+              />
+            </a>
+            <Divider />
+            <a href="https://github.com/hyperapp/hyperapp">
+              <ListItem
+                primaryText="HyperApp"
+                leftIcon={<GithubIcon />}
+              />
+            </a>
+            <Divider />
+            <a href="https://github.com/dchest/tweetnacl-js">
+              <ListItem
+                primaryText="TweetNaCl.js"
+                leftIcon={<GithubIcon />}
+              />
+            </a>
+            <Divider />
+            <a href="https://github.com/facebook/react">
+              <ListItem
+                primaryText="React"
+                leftIcon={<GithubIcon />}
+              />
+            </a>
+            <Divider />
+            <a href="https://github.com/callemall/material-ui">
+              <ListItem
+                primaryText="Material-UI"
+                leftIcon={<GithubIcon />}
+              />
+            </a>
+            <Divider />
+            <a href="http://www.freepik.com">
+              <ListItem
+                primaryText="Icons made by Freepik"
+                leftIcon={<WebsiteIcon />}
               />
             </a>
           </List>
@@ -135,6 +188,18 @@ class About extends Component {
           </List>
         </Card>
         <div className="header">
+          <h2 className="title"><FormattedMessage {...messages.license} /></h2>
+        </div>
+        <Card>
+          <List>
+            <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">
+              <ListItem
+                primaryText="GPLv3"
+              />
+            </a>
+          </List>
+        </Card>
+        <div className="header">
           <h2 className="title">
             <FormattedMessage {...messages.projectPages} />
           </h2>
@@ -143,12 +208,12 @@ class About extends Component {
           <CardText>
             <div style={styles.logos}>
               <div style={styles.logo}>
-                <a href="https://github.com/varjolintu/keepassxc-browser">
+                <a href="https://github.com/mauron85/keepassxc-browser">
                   <GithubLogo />
                 </a>
               </div>
-              <div style={styles.logo}>
-                <a href="https://chrome.google.com/webstore/detail/keepassxc-browser/iopaggbpplllidnfmcghoonnokmjoicf">
+              <div className="not-allowed" style={styles.logo}>
+                <a>
                   <WebStoreLogo />
                 </a>
               </div>
@@ -156,9 +221,6 @@ class About extends Component {
           </CardText>
         </Card>
         <ul style={styles.copyrights}>
-          <li style={styles.line}>
-            2010-2017 - Perry Nguyen, Lukas Schulze, Sami Vänttinen
-          </li>
           <li>
             Icons made by{' '}
             <a href="http://www.freepik.com" title="Freepik">

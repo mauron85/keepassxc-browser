@@ -6,6 +6,15 @@ using modern javascript.
 
 For testing purposes, please use following unofficial [varjolintu](https://github.com/varjolintu)'s KeePassXC [release](https://github.com/varjolintu/keepassxc/releases).
 
+## Build
+
+```
+npm install
+npm run build
+```
+
+Unpacked extension will be built into `dist` folder.
+
 ## Protocol
 
 Transmitting messages between KeePassXC and keepassxc-browser is totally rewritten. This is still under development.

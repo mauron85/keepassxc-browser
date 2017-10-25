@@ -26,17 +26,6 @@ const states = {
   CHOOSE_CREDENTIALS_FIELDS: 5
 };
 
-const styles = {
-  root: {
-    position: 'absolute !important',
-    zIndex: '9999 !important',
-    top: '0 !important',
-    left: '0 !important',
-    fontFamily: '"Roboto", sans-serif !important',
-    fontSize: '14px !important'
-  }
-}
-
 function parents(node) {
   let nodes = [node];
   for (; node; node = node.parentNode) {
@@ -179,7 +168,7 @@ let run = () => {
           component = null;
       }
       return (
-        <div id={rootId} style={styles.root}>
+        <div id={rootId} className="keepassxc-root">
           {component}
         </div>
       );

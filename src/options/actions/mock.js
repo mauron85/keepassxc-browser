@@ -28,7 +28,7 @@ export function getCredentialFields() {
 }
 
 export function getPluginVersion() {
-  return '0.2.0';
+  return '0.1.0';
 }
 
 export function getKeePassXCVersion() {

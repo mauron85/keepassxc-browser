@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "keepassxc-browser",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "description": "KeePassXC integration for modern web browsers",
   "author": "Sami Vänttinen",
   "icons": {
@@ -30,7 +30,6 @@
       "matches": ["http://*/*", "https://*/*"],
       "js": ["content_scripts/index.js"],
       "css": [
-        "vendor/mui.min.css",
         "content_scripts/keepassxc-browser.css"
       ],
       "run_at": "document_start",
@@ -57,7 +56,7 @@
   "permissions": ["contextMenus", "nativeMessaging", "https:/api.github.com/"],
   "applications": {
     "gecko": {
-      "id": "keepassxc-browser@sami.vanttinen",
+      "id": "keepassxc-browser@mauron85",
       "strict_min_version": "53.0"
     }
   }
